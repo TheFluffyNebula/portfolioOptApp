@@ -1,0 +1,9 @@
+services:
+  flaskapp:
+    container_name: flaskapp
+    image: flaskapp:1.0.0
+    build: 
+      context: ./backend
+      dockerfile: flask.dockerfile
+    ports:
+      - 4000:4000
