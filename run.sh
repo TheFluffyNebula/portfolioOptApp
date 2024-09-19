@@ -10,8 +10,8 @@ clear='\033[0m'
 
 echo -e "${yellow}Starting system${clear}"
 
-echo -e "${yellow}Building Flask backend${clear}"
-docker compose build flaskapp
+echo -e "${yellow}Building apps${clear}"
+docker compose build
 
 echo -e "${green}Running all docker images${clear}"
 docker compose up
