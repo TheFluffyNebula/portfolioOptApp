@@ -1,7 +1,8 @@
-import Navbar from '../components/Navbar';
-
 export default function Home() {
   return (
-    <Navbar />
-  )
+    <div className="h-full w-full m-auto text-center">
+      <span className="self-center text-8xl font-semibold whitespace-nowrap align-middle h-full">Portfolio Optimization</span>
+    </div>
+  );
+
 }

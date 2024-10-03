@@ -2,24 +2,31 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from 'next/navigation'
 
 import energyLogo from '../assets/svgs/energy.svg';
 import { colorPallete } from '@/styles/constants';
-
-const navigation = [
-  { name: 'Home', href: '#', current: true },
-  { name: 'Download', href: '#', current: false },
-  { name: 'About', href: '#', current: false },
-  { name: 'Help', href: '#', current: false },
-]
+import { useState } from 'react';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function Navbar() {
+  const pathname: string = usePathname();
+  console.log(pathname);
+  const [ currentLink, setCurrentLink ] = useState<string>(pathname);
+
+  const navigation = [
+    { name: 'Home', href: '/', current: currentLink ===  '/'},
+    { name: 'Download', href: '/download', current: currentLink ===  '/download' },
+    { name: 'About', href: '#', current: false },
+    { name: 'Help', href: '#', current: false },
+  ]
+
   return (
-    <Disclosure as="nav" className="bg-gray-800">
+    <Disclosure as="nav" className="bg-gray-800 fixed w-full">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -44,7 +51,7 @@ export default function Navbar() {
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 {navigation.map((item) => (
-                  <a
+                  <Link
                     key={item.name}
                     href={item.href}
                     aria-current={item.current ? 'page' : undefined}
@@ -53,9 +60,10 @@ export default function Navbar() {
                       'rounded-md px-3 py-2 text-sm font-medium',
                     )}
                     style={{ color: item.current ? colorPallete.primary : '#fff' }}
+                    onClick={() => setCurrentLink(item.href)}
                   >
                     {item.name}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>

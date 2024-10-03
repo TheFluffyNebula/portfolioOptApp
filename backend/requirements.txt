@@ -1,2 +1,9 @@
 flask
 flask_cors
+matplotlib
+h5pyd
+numpy
+pandas
+tqdm
+geopandas
+xarray
