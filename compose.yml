@@ -20,3 +20,8 @@ services:
       dockerfile: flask.dockerfile
     ports:
       - 4000:4000
+    environment:
+      - hsds_endpoint=https://developer.nrel.gov/api/hsds
+      - H5SERV_ENDPOINT=https://developer.nrel.gov/api/hsds
+      - hs_api_key=N4K0MbpR1xdbev9HMX6cYpQesal7KcNDtA7oIfz2
+      - hs_bucket=nrel-pds-hsds

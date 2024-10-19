@@ -7,3 +7,8 @@ pandas
 tqdm
 geopandas
 xarray
+NREL-rex
+geopandas
+shapely
+hdf5
+netcdf4
