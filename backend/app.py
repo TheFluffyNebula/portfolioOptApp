@@ -52,7 +52,9 @@ def get_wind_energy_optimization():
     WindSpeedHeightsAvailable={"100":"windspeed_100m.npz", "140":"windspeed_140m.npz", "160":"windspeed_160m.npz"}
 
     WindEnergy_pu, RatedPower, LatLong, WS_Hub, Depth, DistanceShore, TimeList, ResolutionKm=WindToEnergy(InputDataPath, WindTurbine, WindSpeedHeightsAvailable, SavePath=None) 
-    PlotGeneralGeoData(LatLong, np.mean(WindEnergy_pu,axis=0), GeoDataPath, ColorBarTitle="[pu]", Title="Generation for ATB 15MW Device", SavePath=None, s=6, LatMaxMin=(32.9, 37.1), LongMaxMin=(-80, -74.3))
+    PlotGeneralGeoData(LatLong, np.mean(WindEnergy_pu,axis=0), GeoDataPath, ColorBarTitle="[pu]", Title="Generation for ATB 15MW Device", SavePath='C://Users/snisar/Desktop/OceanPortfolioOptimization/portfolio-optimization/backend', s=6, LatMaxMin=(32.9, 37.1), LongMaxMin=(-80, -74.3))
+
+    # return send_file('/', as_attachment=True)
 
 if __name__ == '__main__':
     app.run('0.0.0.0', 4000, debug=True)

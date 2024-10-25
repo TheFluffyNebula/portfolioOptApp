@@ -10,5 +10,4 @@ xarray
 NREL-rex
 geopandas
 shapely
-hdf5
-netcdf4
+fiona==1.9.6
