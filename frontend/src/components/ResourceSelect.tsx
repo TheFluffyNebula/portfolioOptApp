@@ -1,0 +1,151 @@
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { colorPallete } from '@/styles/constants'
+
+export default function ResourceSelect() {
+  const windDesigns = [ "8MW Vestas 2020", "12MW 2030", "15MW 2030", "18MW 2030" ];
+  const kiteDesigns = [ "VS 50m RFS 1.0 m/s", "VS 50m RFS 1.5 m/s", "VS 50m RFS 2.0 m/s", "VS 50m RFS 2.5 m/s", "1.987MW (2.25m/s)" ];
+  const waveDesigns = [ "Pelamis", "RM3" ];
+
+  const transmissionSystem = [ '1.2GW', '1.0GW', '0.6GW', '0.3GW', '0.1GW' ];
+  return (
+    <Menu as="div" className="relativeinline-block text-left">
+      <div>
+        <MenuButton className="inline-flex justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
+          Options
+          <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
+        </MenuButton>
+      </div>
+
+      <MenuItems
+        transition
+        className="absolute z-10 mt-2 p-4 mx-auto origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in grid place-content-center py-8"
+      >
+        <p className="text-sm not-italic mb-1" style={{ textDecorationColor: colorPallete.primary }}>Wind</p>
+        <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }}></div>
+        <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
+          {windDesigns.map(elem => {
+            return <div className="flex" key={elem}>
+            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} />
+            <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
+          </div>
+          })}
+        </div>
+
+        <p className="mt-5 text-sm not-italic mb-1" style={{ textDecorationColor: colorPallete.primary }}>Kite</p>
+        <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }}></div>
+        <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
+          {kiteDesigns.map(elem => {
+            return <div className="flex" key={elem}>
+            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} />
+            <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
+          </div>
+          })}
+        </div>
+
+        <p className="mt-5 text-sm not-italic mb-1" style={{ textDecorationColor: colorPallete.primary }}>Wave</p>
+        <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }}></div>
+        <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
+          {waveDesigns.map(elem => {
+            return <div className="flex" key={elem}>
+            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} />
+            <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
+          </div>
+          })}
+        </div>
+          {/* TRANSMISSION CAPACITY SYSTEMS */}
+        {/* <p className="mt-5 text-sm not-italic" style={{ textDecorationColor: colorPallete.primary }}>Transmission System Capacity</p>
+        <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }}></div>
+        <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
+          {transmissionSystem.map(elem => {
+            return <div className="flex" key={elem}>
+            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} />
+            <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
+          </div>
+          })}
+        </div> */}
+
+      </MenuItems>
+    </Menu>
+  )
+}
+
+
+// 'use client'
+
+// import { useState } from 'react'
+// import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
+// import { ChevronUpDownIcon } from '@heroicons/react/16/solid'
+// import { CheckIcon } from '@heroicons/react/20/solid'
+
+// import { WIND_ENERGY, WAVE_ENERGY, KITE_ENERGY, OCEAN_ENERGY } from '../constants/names';
+
+// const list = [
+//     {
+//         id: 1,
+//         label: 'Wind Energy',
+//         value: WIND_ENERGY
+//     },
+//     {
+//         id: 2,
+//         label: 'Wave Energy',
+//         value: WAVE_ENERGY
+//     },
+//     {
+//         id: 3,
+//         label: 'Kite Energy',
+//         value: KITE_ENERGY
+//     },
+//     {
+//         id: 4,
+//         label: 'Ocean Energy',
+//         value: OCEAN_ENERGY
+//     }
+// ];
+
+// const ResourceSelect = () => {
+//   const [selected, setSelected] = useState(list[1])
+
+//   return (
+//     <Listbox value={selected} onChange={setSelected}>
+//       <Label className="block text-sm/6 font-medium text-gray-900">Resource Type</Label>
+//       <div className="relative mt-2 w-full">
+//         <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pl-3 pr-2 text-left text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+//           <span className="col-start-1 row-start-1 flex items-center gap-3 pr-6">
+//             <span className="block truncate">{selected.label}</span>
+//           </span>
+//           <ChevronUpDownIcon
+//             aria-hidden="true"
+//             className="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+//           />
+//         </ListboxButton>
+
+//         <ListboxOptions
+//           transition
+//           className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm"
+//         >
+//           {list.map((elem) => (
+//             <ListboxOption
+//               key={elem.id}
+//               value={elem}
+//               className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white data-[focus]:outline-none"
+//             >
+//               <div className="flex items-center">
+  
+//                 <span className="ml-3 block truncate font-normal group-data-[selected]:font-semibold">
+//                   {elem.label}
+//                 </span>
+//               </div>
+
+//               <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600 group-[&:not([data-selected])]:hidden group-data-[focus]:text-white">
+//                 <CheckIcon aria-hidden="true" className="size-5" />
+//               </span>
+//             </ListboxOption>
+//           ))}
+//         </ListboxOptions>
+//       </div>
+//     </Listbox>
+//   )
+// }
+
+// export default ResourceSelect;
