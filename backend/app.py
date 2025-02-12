@@ -254,7 +254,7 @@ def generate():
 
     from Tools.Port_Opt_MaxGeneration import SolvePortOpt_MaxGen_LCOE_Iterator
 
-    GeneralPathResources="/OutputData/"
+    GeneralPathResources="OutputData/"
     PathWindDesigns=[]
     PathKiteDesigns=[]
     PathTransmissionDesign=[]
@@ -283,7 +283,7 @@ def generate():
             TurbineCaseName=PathWindDesigns_i.rsplit(r"/")[-1][:-4]
             TransmissionCaseName=PathTransmissionDesign_i.rsplit(r"/")[-1][:-4]
             
-            SavePath="/OutputData/Portfolios/Wind_"+TurbineCaseName+"_"+TransmissionCaseName+"Rob.npz"
+            SavePath="OutputData/Portfolios/Wind_"+TurbineCaseName+"_"+TransmissionCaseName+"_Shubh.npz"
             ReadMe="Case with wind on BOEM regions, considering a 1.2GW, 1.0, 0.6, 0.3 or 0.1GW transmission system, 30km radious and 1 design for each tech\
                     \n Wind designs: 8MW Vestas 2020, 12MW 2030, 15MW 2030, 18MW 2030"
             

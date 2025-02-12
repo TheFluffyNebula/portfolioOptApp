@@ -13,3 +13,4 @@ shapely
 fiona==1.9.6
 xarray
 pyomo
+gurobipy
