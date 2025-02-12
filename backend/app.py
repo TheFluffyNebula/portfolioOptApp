@@ -1,11 +1,13 @@
-from flask import Flask, jsonify, send_file
+from flask import Flask, jsonify, send_file, request
 from flask_cors import CORS, cross_origin
 
 import csv
 import numpy as np
 import xarray as xr
 import sys
+import json
 from datetime import datetime, timedelta
+from tqdm import tqdm
 
 from OceanPortfolioOptimization.Tools.DownloadNREL_Wind import DonwloadNREL_WindData
 from OceanPortfolioOptimization.Tools.GeneralGeoTools import PlotTurbineLocations
@@ -14,7 +16,7 @@ from OceanPortfolioOptimization.Tools.Port_Opt_MaxGeneration import SolvePortOpt
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/test', methods=['GET'])
+@app.route('/test', methods=['GET', 'POST'])
 def test():
     return jsonify({ 'message': 'The server is running' })
 
@@ -243,6 +245,31 @@ def tmp():
 
 
     LCOE_RANGE=list(range(120,30,-2))
+@app.route('/generate', methods=['GET', 'POST'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+def generate():
+    requestdata = json.loads(request.data)
+    requestdata = json.loads(requestdata['body'])
+    print(requestdata)
+
+    from Tools.Port_Opt_MaxGeneration import SolvePortOpt_MaxGen_LCOE_Iterator
+
+    GeneralPathResources="./OutputData/"
+    PathWindDesigns=[]
+    PathKiteDesigns=[]
+    PathTransmissionDesign=[]
+    PathWaveDesigns = []
+
+    for resourceType in requestdata['resourceType']:
+        PathWindDesigns.append(GeneralPathResources+resourceType)
+
+    for transmission in requestdata['transmission']:
+        PathTransmissionDesign.append(GeneralPathResources+transmission)
+
+    print(PathWindDesigns)
+    print(PathTransmissionDesign)
+
+    LCOE_RANGE=range(requestdata['lcoe_max'], requestdata['lcoe_min'], -1*requestdata['lcoe_step'])
     Max_CollectionRadious=30
     MaxDesingsKite=1
     MaxDesignsWind=1
@@ -263,6 +290,9 @@ def tmp():
 
             #Create and solve the optimization problem
             SolvePortOpt_MaxGen_LCOE_Iterator([PathWindDesigns_i], PathWaveDesigns, PathKiteDesigns, PathTransmissionDesign_i, LCOE_RANGE, Max_CollectionRadious,MaxDesignsWind, MaxDesingsWave, MaxDesingsKite,MinNumWindTurb,MinNumWaveTurb,MinNumKiteTrub, ReadMe,SavePath=SavePath)
+
+    return jsonify({ 'result': 'Executed API' }) 
+    
 
 if __name__ == '__main__':
     # tmp()
