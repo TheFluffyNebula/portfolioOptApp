@@ -6,8 +6,23 @@ import { colorPallete } from '@/styles/constants';
 import Input from '@/components/Input';
 import TransmissionCapSelect from '@/components/TransmissionCapSelect';
 import YearSelect from '@/components/YearSelect';
+import api from '../api';
 
 const Prototype = () => {
+    const handleOnClick = async () => {
+        // const data = await api.test();
+        // console.log(data);
+
+        const data = await api.generateEfficientFrontiers(
+            ['Wind/Upscale24h_0.05Degree_GenCost_ATB_8MW_2020_Vestas.npz'], 
+            ['Transmission/Transmission_1200MW.npz'],
+            120,
+            100,
+            4
+        );
+
+        console.log(data);
+    };
     return (
         <div className='w-2/3 lg:w-1/3 flex flex-col items-center'>
             <div className='w-full flex flex-col justify-items-start items-start'>
@@ -45,7 +60,7 @@ const Prototype = () => {
                         <Input label='LCOE Max' type='number' step="1" placeholder='120' curr='$/MWh'/>
                     </div>
                 </div>
-                <button className="inline-flex items-center w-full justify-center m-3 mt-8 px-3 py-2 text-sm font-medium text-center text-white rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300" style={{
+                <button onClick={handleOnClick} className="inline-flex items-center w-full justify-center m-3 mt-8 px-3 py-2 text-sm font-medium text-center text-white rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300" style={{
                     backgroundColor: colorPallete.primary
                 }}>Generate Efficient Frontiers</button>
             </div>
