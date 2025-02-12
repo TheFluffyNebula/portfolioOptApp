@@ -14,8 +14,8 @@ from datetime import datetime, timedelta
 from tqdm import tqdm
 import sys
 
-from OceanPortfolioOptimization.Tools.GetIdxInOutRadious import GetIdxOutRadious, GetIdxInRadious_Simple
-from OceanPortfolioOptimization.Tools.Port_Opt_Tools import GetOverlaps_Idx_Area
+from Tools.GetIdxInOutRadious import GetIdxOutRadious, GetIdxInRadious_Simple
+from Tools.Port_Opt_Tools import GetOverlaps_Idx_Area
 
 
 def PreparePotOptInputs(PathWindDesigns, PathWaveDesigns, PathKiteDesigns, PathTransmissionDesign, LCOE_RANGE=range(200,30,-2)\
