@@ -14,11 +14,11 @@ const Prototype = () => {
         // console.log(data);
 
         const data = await api.generateEfficientFrontiers(
-            ['Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_8MW_2020_Vestas.npz'], 
+            ['Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_18MW_2030.npz'], 
             ['Transmission/Transmission_1200MW.npz'],
             120,
-            100,
-            4
+            30,
+            3
         );
 
         console.log(data);

@@ -245,6 +245,7 @@ def tmp():
 
 
     LCOE_RANGE=list(range(120,30,-2))
+
 @app.route('/generate', methods=['GET', 'POST'])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def generate():
@@ -271,25 +272,29 @@ def generate():
 
     LCOE_RANGE=range(requestdata['lcoe_max'], requestdata['lcoe_min'], -1*requestdata['lcoe_step'])
     Max_CollectionRadious=30
-    MaxDesingsKite=1
+    MaxDesingsKite=2
     MaxDesignsWind=1
+    
+    MinNumWindTurb=1
+    MinNumKiteTrub=1
+    
     MaxDesingsWave=0
-    MinNumWindTurb=0
     MinNumWaveTurb=0
-    MinNumKiteTrub=0
 
     for PathTransmissionDesign_i in tqdm(PathTransmissionDesign):
         for wi, PathWindDesigns_i in enumerate(PathWindDesigns):
             TurbineCaseName=PathWindDesigns_i.rsplit(r"/")[-1][:-4]
             TransmissionCaseName=PathTransmissionDesign_i.rsplit(r"/")[-1][:-4]
             
-            SavePath="OutputData/Portfolios/Wind_"+TurbineCaseName+"_"+TransmissionCaseName+"_Shubh.npz"
+            SavePath="OutputData/Portfolios/KiteWind_"+TurbineCaseName+"_"+TransmissionCaseName+"_18MW-12MWT-LCOE_3.npz"
+            print(SavePath)
             ReadMe="Case with wind on BOEM regions, considering a 1.2GW, 1.0, 0.6, 0.3 or 0.1GW transmission system, 30km radious and 1 design for each tech\
                     \n Wind designs: 8MW Vestas 2020, 12MW 2030, 15MW 2030, 18MW 2030"
             
 
             #Create and solve the optimization problem
             SolvePortOpt_MaxGen_LCOE_Iterator([PathWindDesigns_i], PathWaveDesigns, PathKiteDesigns, PathTransmissionDesign_i, LCOE_RANGE, Max_CollectionRadious,MaxDesignsWind, MaxDesingsWave, MaxDesingsKite,MinNumWindTurb,MinNumWaveTurb,MinNumKiteTrub, ReadMe,SavePath=SavePath)
+            print(f"Done with {SavePath}")
 
     return jsonify({ 'result': 'Executed API' }) 
     
