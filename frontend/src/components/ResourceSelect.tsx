@@ -2,10 +2,41 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { colorPallete } from '@/styles/constants'
 
-export default function ResourceSelect() {
+interface ResourceSelectInterface {
+  state: {
+    wind: string[],
+    wave: string[],
+    kite: string[],
+    tranmission: string[],
+    lcoe_max: number,
+    lcoe_min: number,
+    lcoe_step: number,
+  };
+  setState: any;
+};
+
+export default function ResourceSelect(props: ResourceSelectInterface) {
   const windDesigns = [ "8MW Vestas 2020", "12MW 2030", "15MW 2030", "18MW 2030" ];
   const kiteDesigns = [ "VS 50m RFS 1.0 m/s", "VS 50m RFS 1.5 m/s", "VS 50m RFS 2.0 m/s", "VS 50m RFS 2.5 m/s", "1.987MW (2.25m/s)" ];
   const waveDesigns = [ "Pelamis", "RM3" ];
+
+  interface dictInterface {
+    [key: string]:string
+  };
+
+  const dict: dictInterface = {
+    "8MW Vestas 2020": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_8MW_2020_Vestas.npz",
+    "12MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_12MW_2030.npz", 
+    "15MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_15MW_2030.npz", 
+    "18MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_18MW_2030.npz",
+    "VS 50m RFS 1.0 m/s": "",
+    "VS 50m RFS 1.5 m/s": "",
+    "VS 50m RFS 2.0 m/s": "",
+    "VS 50m RFS 2.5 m/s": "",
+    "1.987MW (2.25m/s)": "",
+    "Pelamis": "",
+    "RM3": ""
+  };
 
   const transmissionSystem = [ '1.2GW', '1.0GW', '0.6GW', '0.3GW', '0.1GW' ];
   return (
@@ -26,8 +57,17 @@ export default function ResourceSelect() {
         <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
           {windDesigns.map(elem => {
             return <div className="flex" key={elem}>
-            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} />
-            <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
+              <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} value={elem} onClick={(e) => {
+                  let wind_tmp: string[] = props.state.wind;
+                  if(props.state.wind.includes(dict[e.target.value])){
+                    wind_tmp = wind_tmp.filter(elem => elem !== dict[e.target.value]);
+                  } else {
+                    wind_tmp.push(dict[e.target.value]);
+                  }
+                  props.setState({...props.state, wind: wind_tmp })
+                }}
+              />
+              <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
           </div>
           })}
         </div>
@@ -37,7 +77,15 @@ export default function ResourceSelect() {
         <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
           {kiteDesigns.map(elem => {
             return <div className="flex" key={elem}>
-            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} />
+            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} value={elem} onClick={(e) => {
+                  let kite_tmp: string[] = props.state.kite;
+                  if(props.state.kite.includes(dict[e.target.value])){
+                    kite_tmp = kite_tmp.filter(elem => elem !== dict[e.target.value]);
+                  } else {
+                    kite_tmp.push(dict[e.target.value]);
+                  }
+                  props.setState({...props.state, kite: kite_tmp })
+                }}/>
             <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
           </div>
           })}
@@ -48,7 +96,15 @@ export default function ResourceSelect() {
         <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
           {waveDesigns.map(elem => {
             return <div className="flex" key={elem}>
-            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} />
+            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} onClick={(e) => {
+                  let wave_tmp: string[] = props.state.wave;
+                  if(props.state.wave.includes(dict[e.target.value])){
+                    wave_tmp = wave_tmp.filter(elem => elem !== dict[e.target.value]);
+                  } else {
+                    wave_tmp.push(dict[e.target.value]);
+                  }
+                  props.setState({...props.state, wave: wave_tmp })
+                }}/>
             <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
           </div>
           })}
