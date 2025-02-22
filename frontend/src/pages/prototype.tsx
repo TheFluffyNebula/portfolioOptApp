@@ -7,8 +7,23 @@ import Input from '@/components/Input';
 import TransmissionCapSelect from '@/components/TransmissionCapSelect';
 import YearSelect from '@/components/YearSelect';
 import api from '../api';
+import { useEffect, useState } from 'react';
 
 const Prototype = () => {
+    const [ useApiData, setUseApiData ] = useState({
+        wind: [],
+        wave: [],
+        kite: [],
+        tranmission: [],
+        lcoe_max: 120,
+        lcoe_min: 30,
+        lcoe_step: 4,
+    });
+
+    useEffect(() => {
+        console.log(useApiData)
+    }, [useApiData]);
+
     const handleOnClick = async () => {
         // const data = await api.test();
         // console.log(data);
@@ -29,7 +44,7 @@ const Prototype = () => {
             <span className="self-center text-4xl mt-5 mb-5 whitespace-nowrap align-middle h-full">Portfolio Optimization</span>
                 <div className='m-3 mb-8 w-full'>
                     <p className="mb-3 not-italic underline decoration-4 underline-offset-4" style={{ textDecorationColor: colorPallete.primary }}>Resources</p>
-                    <Select />
+                    <Select state={useApiData} setState={setUseApiData} />
                 </div>
 
                 <div className='m-3 mb-8 w-full'>
@@ -47,8 +62,14 @@ const Prototype = () => {
                     <div className='grid grid-cols-2 gap-6 justify-center'>
                         <TransmissionCapSelect />
                         <Input label='Max Trans. System Radius' type='number' step="0.01" placeholder='0' curr='mi'/>
-                        <Input label='Number of Devices / Resource' type='number' step="1" placeholder='0.0' curr=''/>
-                        <Input label='Number of Devices / sq. km' step="1" type='number' placeholder='0' curr=''/>
+                        {useApiData.wind.length > 0 && (<Input label='Number of Wind Devices / Resource' type='number' step="1" placeholder='0.0' curr=''/>)}
+                        {useApiData.wind.length > 0 && (<Input label='Number of Wind Devices / sq. km' step="1" type='number' placeholder='0' curr=''/>)}
+
+                        {useApiData.kite.length > 0 && (<Input label='Number of Kite Devices / Resource' type='number' step="1" placeholder='0.0' curr=''/>)}
+                        {useApiData.kite.length > 0 && (<Input label='Number of Kite Devices / sq. km' step="1" type='number' placeholder='0' curr=''/>)}
+
+                        {useApiData.wave.length > 0 && (<Input label='Number of Wave Devices / Resource' type='number' step="1" placeholder='0.0' curr=''/>)}
+                        {useApiData.wave.length > 0 && (<Input label='Number of Wave Devices / sq. km' step="1" type='number' placeholder='0' curr=''/>)}
                         {/* <Input label='Year(s) of Analysis' type='number' step="1" placeholder='0' curr=''/> */}
                         <YearSelect label='Year(s) of Analysis from'/>
                         <YearSelect label='Year(s) of Analysis to'/>
