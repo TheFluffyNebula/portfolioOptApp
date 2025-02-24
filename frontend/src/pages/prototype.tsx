@@ -75,10 +75,10 @@ const Prototype = () => {
                         <YearSelect label='Year(s) of Analysis to'/>
                         <Input label='Distance from Shore' step="0.01" type='number' placeholder='0.0' curr='mi' />
                         <Input label='Max Water Depth' type='number' step="0.01" placeholder='0.0' curr='mi'/>
-                        <Input label='Wind Speed Diameter' type='number' step="1" placeholder='0' curr='mi'/>
-                        <Input label='LCOE Step Size' type='number' step="1" placeholder='4' curr=''/>
+                        
                         <Input label='LCOE Min' type='number' step="1" placeholder='30' curr='$/MWh'/>
                         <Input label='LCOE Max' type='number' step="1" placeholder='120' curr='$/MWh'/>
+                        <Input label='LCOE Step Size' type='number' step="1" placeholder='4' curr=''/>
                     </div>
                 </div>
                 <button onClick={handleOnClick} className="inline-flex items-center w-full justify-center m-3 mt-8 px-3 py-2 text-sm font-medium text-center text-white rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300" style={{
