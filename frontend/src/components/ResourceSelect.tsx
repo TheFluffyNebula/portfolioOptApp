@@ -17,7 +17,7 @@ interface ResourceSelectInterface {
 
 export default function ResourceSelect(props: ResourceSelectInterface) {
   const windDesigns = [ "8MW Vestas 2020", "12MW 2030", "15MW 2030", "18MW 2030" ];
-  const kiteDesigns = [ "VS 50m RFS 1.0 m/s", "VS 50m RFS 1.5 m/s", "VS 50m RFS 2.0 m/s", "VS 50m RFS 2.5 m/s", "1.987MW (2.25m/s)" ];
+  const kiteDesigns = [ "0.05MW (0.5m/s)", "0.14MW (0.75m/s)", "0.31MW (1.0m/s)", "0.57MW (1.25m/s)", "0.93MW (1.5m/s)", "1.43MW (1.75m/s)", "2.04MW (2.0m/s)", "1.987MW (2.25m/s)", "1.87MW (2.5m/s)", "1.81MW (2.75m/s)" ];
   const waveDesigns = [ "Pelamis", "RM3" ];
 
   interface dictInterface {
@@ -29,11 +29,16 @@ export default function ResourceSelect(props: ResourceSelectInterface) {
     "12MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_12MW_2030.npz", 
     "15MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_15MW_2030.npz", 
     "18MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_18MW_2030.npz",
-    "VS 50m RFS 1.0 m/s": "",
-    "VS 50m RFS 1.5 m/s": "",
-    "VS 50m RFS 2.0 m/s": "",
-    "VS 50m RFS 2.5 m/s": "",
+    "0.05MW (0.5m/s)": "",
+    "0.14MW (0.75m/s)": "",
+    "0.31MW (1.0m/s)": "",
+    "0.57MW (1.25m/s)": "",
+    "0.93MW (1.5m/s)": "",
+    "1.43MW (1.75m/s)": "",
+    "2.04MW (2.0m/s)": "",
     "1.987MW (2.25m/s)": "",
+    "1.87MW (2.5m/s)": "", 
+    "1.81MW (2.75m/s)": "",
     "Pelamis": "",
     "RM3": ""
   };
