@@ -1,3 +1,5 @@
+#env Gurobi
+
 from flask import Flask, jsonify, send_file, request
 from flask_cors import CORS, cross_origin
 
@@ -10,11 +12,15 @@ from datetime import datetime, timedelta
 from tqdm import tqdm
 
 from OceanPortfolioOptimization.Tools.DownloadNREL_Wind import DonwloadNREL_WindData
-from OceanPortfolioOptimization.Tools.GeneralGeoTools import PlotTurbineLocations
+from OceanPortfolioOptimization.Tools.GeneralGeoTools import PlotTurbineLocations, ChangeTimeSpaceResolution
 from Tools.Port_Opt_MaxGeneration import SolvePortOpt_MaxGen_LCOE_Iterator
+from gurobipy import *
+from pathlib import Path
 
 app = Flask(__name__)
 CORS(app)
+
+path = Path(__file__).parent
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
@@ -40,6 +46,118 @@ def download_wind_data():
     DonwloadNREL_WindData(InputDataPath, SavePath, Data2Download=Data2Download, LatMinMax=LatMinMax, LongMinMax=LongMinMax, DepthMinMax=DepthMinMax)
 
     return send_file(SavePath, as_attachment=True)
+
+@app.route('/getWindEnergyCostGeneration', methods=['POST'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+def getWindEnergyCostGeneration():
+    CurrentTimeResolution=1 #in hours
+    NewTimeResolution=3 #3hour time discretization
+    StepsPerDegree=10 #New grid resolution 1/StepsPerDegree (If you want the same resolution as the BOEM data, set this to 100 as it will filter sites with no data)
+
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), 400
+
+    try:
+        requestdata = request.get_json()  # Use Flask's built-in JSON parsing
+        # Remove redundant json.loads if client sends direct JSON
+        start_year = requestdata['start_year']
+        end_year = requestdata['end_year']
+    except Exception as e:
+        return jsonify({"error": f"Invalid request format: {str(e)}"}), 400
+
+    StartDateTime=datetime(start_year, 1, 1, 0, 0)
+    EndDateTime=datetime(end_year, 12, 31, 23) #Wind goes up to datetime(2013, 12, 31, 23)
+
+    file_list=["GenCost_ATB_8MW_2020_Vestas","GenCost_ATB_12MW_2030","GenCost_ATB_15MW_2030", "GenCost_ATB_18MW_2030"]
+    for file in file_list:
+        ReferenceDataPath=str(path) + "./OutputData/Wind/"+ file +".npz"
+        NewSavePath=str(path) + f"./OutputData/Wind/Upscale3h_0.1Degree_{start_year}_{end_year}_"+ file +".npz"
+        _, _, _, _, _, _, _, _, _, _,_=ChangeTimeSpaceResolution (ReferenceDataPath, CurrentTimeResolution, NewTimeResolution, StepsPerDegree, StartDateTime, EndDateTime, NewSavePath=NewSavePath)
+        print(NewSavePath)
+
+    return jsonify({ 'message': 'The server executed this API call.' })
+
+@app.route('/portfolioOptimization', methods=['POST'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+def portfolioOptimization():
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), 400
+    
+    PathWindDesigns=[]
+    PathKiteDesigns=[]
+    PathWaveDesigns=[]
+    PathTransmissionDesign=[]
+    GeneralPathResources="./OutputData/"
+
+
+    try:
+        requestdata = request.get_json()  # Use Flask's built-in JSON parsing
+        # Remove redundant json.loads if client sends direct JSON
+        winds = requestdata['wind']
+        for wind in winds:
+            PathWindDesigns.append(GeneralPathResources + wind)
+        
+        kites = requestdata['kite']
+        for kite in kites:
+            PathKiteDesigns.append(GeneralPathResources + kite)
+        
+        waves = requestdata['wave']
+        for wave in waves:
+            PathWaveDesigns.append(GeneralPathResources + wave)
+        
+        kites = requestdata['transmission']
+        for kite in kites:
+            PathTransmissionDesign.append(GeneralPathResources + kite)
+        
+        max_wind = requestdata['max_wind']
+        min_wind = requestdata['min_wind']
+
+        max_kite = requestdata['max_kite']
+        min_kite = requestdata['min_kite']
+        
+        max_wave = requestdata['max_wave']
+        min_wave = requestdata['min_wave']
+
+        lcoe_max = requestdata['lcoe_max']
+        lcoe_min = requestdata['lcoe_min']
+        lcoe_step = requestdata['lcoe_step']
+
+
+        LCOE_RANGE=range(lcoe_max,lcoe_min,-1*lcoe_step)
+        Max_CollectionRadious=30
+        MaxDesignsWind=max_wind
+        MaxDesingsKite=max_kite
+
+        MinNumWindTurb=min_wind
+        MinNumKiteTrub=min_kite
+
+        MaxDesingsWave=max_wave
+        MinNumWaveTurb=min_wave
+
+        print(PathWindDesigns)
+        print(PathKiteDesigns)
+        print(PathWaveDesigns)
+        print(PathTransmissionDesign)
+        
+        for PathTransmissionDesign_i in (PathTransmissionDesign):
+            for wi, PathWindDesigns_i in tqdm(enumerate(PathWindDesigns)):
+                TurbineCaseName=PathWindDesigns_i.rsplit(r"/")[-1][:-4]
+                TransmissionCaseName=PathTransmissionDesign_i.rsplit(r"/")[-1][:-4]
+                
+                SavePath=str(path) + "./OutputData/Portfolios/KiteWind_"+TurbineCaseName+"_"+TransmissionCaseName+f"_{datetime.today().strftime('%Y-%m-%d')}"
+                ReadMe=""
+            
+                #Create and solve the optimization problem
+                SolvePortOpt_MaxGen_LCOE_Iterator([PathWindDesigns_i], PathWaveDesigns, PathKiteDesigns, PathTransmissionDesign_i, LCOE_RANGE,
+                    Max_CollectionRadious, MaxDesignsWind, MaxDesingsWave, MaxDesingsKite, MinNumWindTurb, MinNumWaveTurb, MinNumKiteTrub,
+                    ReadMe,SavePath=SavePath)
+                print("Done with "+SavePath)
+
+    except Exception as e:
+        return jsonify({"error": f"Invalid request format: {str(e)}"}), 400
+
+    return jsonify({ 'message': 'The server executed this API call.' })
+
 
 @app.route('/generate-wind-binaries', methods=['GET', 'POST'])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
@@ -272,11 +390,11 @@ def generate():
 
     LCOE_RANGE=range(requestdata['lcoe_max'], requestdata['lcoe_min'], -1*requestdata['lcoe_step'])
     Max_CollectionRadious=30
-    MaxDesingsKite=2
+    MaxDesingsKite=0
     MaxDesignsWind=1
     
     MinNumWindTurb=1
-    MinNumKiteTrub=1
+    MinNumKiteTrub=0
     
     MaxDesingsWave=0
     MinNumWaveTurb=0
