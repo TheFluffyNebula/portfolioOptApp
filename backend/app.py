@@ -10,6 +10,7 @@ import sys
 import json
 from datetime import datetime, timedelta
 from tqdm import tqdm
+import time
 
 from OceanPortfolioOptimization.Tools.DownloadNREL_Wind import DonwloadNREL_WindData
 from OceanPortfolioOptimization.Tools.GeneralGeoTools import PlotTurbineLocations, ChangeTimeSpaceResolution
@@ -105,9 +106,9 @@ def portfolioOptimization():
         for wave in waves:
             PathWaveDesigns.append(GeneralPathResources + wave)
         
-        kites = requestdata['transmission']
-        for kite in kites:
-            PathTransmissionDesign.append(GeneralPathResources + kite)
+        tranmissions = requestdata['transmission']
+        for trasmission in tranmissions:
+            PathTransmissionDesign.append(GeneralPathResources + trasmission)
         
         max_wind = requestdata['max_wind']
         min_wind = requestdata['min_wind']
@@ -144,7 +145,7 @@ def portfolioOptimization():
                 TurbineCaseName=PathWindDesigns_i.rsplit(r"/")[-1][:-4]
                 TransmissionCaseName=PathTransmissionDesign_i.rsplit(r"/")[-1][:-4]
                 
-                SavePath=str(path) + "./OutputData/Portfolios/KiteWind_"+TurbineCaseName+"_"+TransmissionCaseName+f"_{datetime.today().strftime('%Y-%m-%d')}"
+                SavePath=str(path) + "./OutputData/Portfolios/KiteWind_"+TurbineCaseName+"_"+TransmissionCaseName+f"_{datetime.today().strftime('%Y-%m-%d')}_{time.time()}"
                 ReadMe=""
             
                 #Create and solve the optimization problem

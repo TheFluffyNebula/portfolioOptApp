@@ -20,12 +20,13 @@ from Tools.Port_Opt_Tools import GetOverlaps_Idx_Area
 
 def PreparePotOptInputs(PathWindDesigns, PathWaveDesigns, PathKiteDesigns, PathTransmissionDesign, LCOE_RANGE=range(200,30,-2)\
     ,Max_CollectionRadious=30, MaxDesignsWind=1, MaxDesignsWave=1, MaxDesignsKite=1, MinNumWindTurb=0, MinNumWaveTurb=0, MinNumKiteTrub=0,
-    WindTurbinesPerSite=4, KiteTurbinesPerSite=390, WaveTurbinesPerSite=4):
+    WindTurbinesPerSite=4, KiteTurbinesPerSite=390, WaveTurbinesPerSite=300):
     
     
-    # WindTurbinesPerSite= 4 per 2x2km cells (as base resolution)
+    # WindTurbinesPerSite= 4 [MW/Km2]
     # KiteTurbinesPerSite= 25 per 2x2km cells, but the simulation is running on 0.08x0.08 degrees cells (as base resolution)
     # KiteTurbinesPerSite= 390 per 9x7km cells
+    # WaveTurbinesPerSite=  1/15degees , from pelamis 12.5 devices per km2. This would be +500 devices, using 300 for now
 
     #WindTurbinesPerSite: Number of turbines per site location based on the initial wind resolution from NREL
     #KiteTurbinesPerSite: Number of turbines per site location based on the initial kite resolution from where the data was obtained (HYCOM, MABSAB)
@@ -48,25 +49,35 @@ def PreparePotOptInputs(PathWindDesigns, PathWaveDesigns, PathKiteDesigns, PathT
     for i in range(len(PathWindDesigns)):
         Data=np.load(PathWindDesigns[i],allow_pickle=True)
         if i==0:
+            
             WindEnergy=Data['Energy_pu']
             WindLatLong=Data['LatLong']
             AnnualizedCostWind=Data['AnnualizedCost']
-            MaxNumWindPerSite=Data["NumberOfCellsPerSite"]*WindTurbinesPerSite
             WindDesign=np.array([i]*len(Data["NumberOfCellsPerSite"]))
             TimeWindData=Data["TimeList"]
             RatedPowerWindTurbine=np.array([float(Data["RatedPower"])]*len(Data["NumberOfCellsPerSite"]))
             WindResolutionDegrees=np.array([float(Data["ResolutionDegrees"])]*len(Data["NumberOfCellsPerSite"]))
             WindResolutionKm=np.array([float(Data["ResolutionKm"])]*len(Data["NumberOfCellsPerSite"]))
             
+            #work with wind using MW/Km2
+            TubPerSite=np.max([WindTurbinesPerSite*4/float(Data["RatedPower"]),1])
+            MaxNumWindPerSite=Data["NumberOfCellsPerSite"]*TubPerSite
+            
+            TimeList=TimeWindData
+            
+            
         else:
             WindEnergy=np.concatenate((WindEnergy,Data['Energy_pu']),axis=1)
             WindLatLong=np.concatenate((WindLatLong,Data['LatLong']))
             AnnualizedCostWind=np.concatenate((AnnualizedCostWind,Data['AnnualizedCost']))
-            MaxNumWindPerSite=np.concatenate((MaxNumWindPerSite,WindTurbinesPerSite*Data["NumberOfCellsPerSite"]))
+            
             WindDesign=np.concatenate((WindDesign,[i]*len(Data["NumberOfCellsPerSite"])))
             RatedPowerWindTurbine=np.concatenate((RatedPowerWindTurbine,np.array([float(Data["RatedPower"])]*len(Data["NumberOfCellsPerSite"]))))
             WindResolutionDegrees=np.concatenate((WindResolutionDegrees, np.array([float(Data["ResolutionDegrees"])]*len(Data["NumberOfCellsPerSite"]))))
             WindResolutionKm=np.concatenate((WindResolutionKm, np.array([float(Data["ResolutionKm"])]*len(Data["NumberOfCellsPerSite"]))))
+
+            TubPerSite=np.max([(WindTurbinesPerSite*4/float(Data["RatedPower"])),1])     
+            MaxNumWindPerSite=np.concatenate((MaxNumWindPerSite,Data["NumberOfCellsPerSite"]*TubPerSite))
             
         Data.close()
         
@@ -84,9 +95,11 @@ def PreparePotOptInputs(PathWindDesigns, PathWaveDesigns, PathKiteDesigns, PathT
             KiteResolutionDegrees=np.array([float(Data["ResolutionDegrees"])]*len(Data["NumberOfCellsPerSite"]))
             KiteResolutionKm=np.array([float(Data["ResolutionKm"])]*len(Data["NumberOfCellsPerSite"]))
             
+            TimeList=TimeKiteData
+            
             
         else:
-            KiteEnergy=np.concatenate((KiteEnergy,Data['Energy_pu']),axis=1)
+            KiteEnergy=np.concatenate((KiteEnergy,Data['Energy_pu']),axis=1) #Change it in the future
             KiteLatLong=np.concatenate((KiteLatLong,Data['LatLong']))
             AnnualizedCostKite=np.concatenate((AnnualizedCostKite,Data['AnnualizedCost']))
             MaxNumKitePerSite=np.concatenate((MaxNumKitePerSite,KiteTurbinesPerSite*Data["NumberOfCellsPerSite"]))
@@ -111,6 +124,8 @@ def PreparePotOptInputs(PathWindDesigns, PathWaveDesigns, PathKiteDesigns, PathT
             WaveResolutionDegrees=np.array([float(Data["ResolutionDegrees"])]*len(Data["NumberOfCellsPerSite"]))
             WaveResolutionKm=np.array([float(Data["ResolutionKm"])]*len(Data["NumberOfCellsPerSite"]))
             
+            TimeList=TimeWaveData
+            
         else:
             WaveEnergy=np.concatenate((WaveEnergy,Data['Energy_pu']),axis=1)
             WaveLatLong=np.concatenate((WaveLatLong,Data['LatLong']))
@@ -121,21 +136,21 @@ def PreparePotOptInputs(PathWindDesigns, PathWaveDesigns, PathKiteDesigns, PathT
             WaveResolutionDegrees=np.concatenate((WaveResolutionDegrees, np.array([float(Data["ResolutionDegrees"])]*len(Data["NumberOfCellsPerSite"]))))
             WaveResolutionKm=np.concatenate((WaveResolutionKm, np.array([float(Data["ResolutionKm"])]*len(Data["NumberOfCellsPerSite"]))))
 
-    #Verify if all the data is at the same time resolution and range
-    if len(PathWindDesigns)!=0 and len(PathKiteDesigns)!=0:
+    # #Verify if all the data is at the same time resolution and range
+    # if len(PathWindDesigns)!=0 and len(PathKiteDesigns)!=0:
         
-        if np.all(TimeWindData==TimeKiteData)==False:
-            return print("Time resolution of the wind, and wave data is not the same")
+    #     if np.all(TimeWindData==TimeKiteData)==False:
+    #         return print("Time resolution of the wind, and wave data is not the same")
         
-    if len(PathWindDesigns)!=0 and len(PathWaveDesigns)!=0:
-        if  np.all(TimeWindData==TimeWaveData)==False:
-            return print("Time resolution of the wind, and wave data is not the same")
+    # if len(PathWindDesigns)!=0 and len(PathWaveDesigns)!=0:
+    #     if  np.all(TimeWindData==TimeWaveData)==False:
+    #         return print("Time resolution of the wind, and wave data is not the same")
 
-    if len(PathKiteDesigns)!=0 and len(PathWaveDesigns)!=0:
-        if  np.all(TimeKiteData==TimeWaveData)==False:
-            return print("Time resolution of the kite, and wave data is not the same")
+    # if len(PathKiteDesigns)!=0 and len(PathWaveDesigns)!=0:
+    #     if  np.all(TimeKiteData==TimeWaveData)==False:
+    #         return print("Time resolution of the kite, and wave data is not the same")
 
-    TimeList=TimeWindData
+    
 
     #Transmission
     Data=np.load(PathTransmissionDesign,allow_pickle=True)["TransmissionLineParameters"].item()
@@ -146,6 +161,32 @@ def PreparePotOptInputs(PathWindDesigns, PathWaveDesigns, PathKiteDesigns, PathT
     RatedPowerMWTransmissionMW=Data['RatedPowerMW']
 
 
+    if len(PathKiteDesigns)!=0:
+        LCOE_Kite=AnnualizedCostKite*10**6/((KiteEnergy.mean(axis=0)*RatedPowerKiteTurbine).mean(axis=0)*365*24)#$/MWh
+        IdxInKites=np.where(LCOE_Kite<200)[0]
+        
+        NumKiteSites=len(KiteLatLong[IdxInKites,:])
+        KiteEnergy=KiteEnergy[:,IdxInKites]
+        KiteLatLong=KiteLatLong[IdxInKites,:]
+        AnnualizedCostKite=AnnualizedCostKite[IdxInKites]
+        MaxNumKitePerSite=MaxNumKitePerSite[IdxInKites]
+        KiteDesign=KiteDesign[IdxInKites]
+        RatedPowerKiteTurbine=RatedPowerKiteTurbine[IdxInKites]
+        KiteResolutionDegrees=KiteResolutionDegrees[IdxInKites]
+        KiteResolutionKm=KiteResolutionKm[IdxInKites]
+
+    if len(PathWindDesigns)!=0:
+        IdxInWind=np.where(WindLatLong[:,0]<200)[0]
+        
+        NumWindSites=len(WindLatLong[IdxInWind,:])
+        WindEnergy=WindEnergy[:,IdxInWind]
+        WindLatLong=WindLatLong[IdxInWind,:]
+        AnnualizedCostWind=AnnualizedCostWind[IdxInWind]
+        MaxNumWindPerSite=MaxNumWindPerSite[IdxInWind]
+        WindDesign=WindDesign[IdxInWind]
+        RatedPowerWindTurbine=RatedPowerWindTurbine[IdxInWind]
+        WindResolutionDegrees=WindResolutionDegrees[IdxInWind]
+        WindResolutionKm=WindResolutionKm[IdxInWind]
 
     PortImputDir={  #Wind data
                     "WindEnergy":WindEnergy,
@@ -169,8 +210,8 @@ def PreparePotOptInputs(PathWindDesigns, PathWaveDesigns, PathKiteDesigns, PathT
                     "NumKiteSites": len(KiteLatLong),
                     "KiteResolutionDegrees":KiteResolutionDegrees,
                     "KiteResolutionKm":KiteResolutionKm,
-                    
-                                        
+
+                                                     
                     #Wavedata
                     "WaveEnergy":WaveEnergy,
                     "WaveLatLong":WaveLatLong,
@@ -389,12 +430,11 @@ def SolvePortOpt_MaxGen_Model(PathWindDesigns, PathWaveDesigns, PathKiteDesigns,
             
             #Compute the overlaped area and estimate the equivalent number of turbines that cannot be installed on the ith location anymore
             Expression=Model.Y_Wind[i] <= InputDir["MaxNumWindPerSite"][i]\
-                    -sum((AreaWindWind_f[k,1]/MaxTurbinesWind_f[k,1]*Model.Y_Wind[IdxWindWind_f[k]])*PercentageOverlap_WindWind_f[k]\
-                        *MaxTurbinesWind_f[k,0]/AreaWindWind_f[k,0] for k in range(len(IdxWindWind_f)))\
-                    -sum((AreaWindWave_f[k,1]/MaxTurbinesWave_f[k,1]*Model.Y_Wave[IdxWindWave_f[k]])*PercentageOverlap_WindWave_f[k]\
-                        *MaxTurbinesWave_f[k,0]/AreaWindWave_f[k,0] for k in range(len(IdxWindWave_f)))\
-                    -sum((AreaWindKite_f[k,1]/MaxTurbinesKite_f[k,1]*Model.Y_Kite[IdxWindKite_f[k]])*PercentageOverlap_WindKite_f[k]\
-                        *MaxTurbinesKite_f[k,0]/AreaWindKite_f[k,0] for k in range(len(IdxWindKite_f)))
+                    -sum(Model.Y_Wind[IdxWindWind_f[k]] for k in range(len(IdxWindWind_f)))#\
+                    # -sum((AreaWindWave_f[k,1]/MaxTurbinesWave_f[k,1]*Model.Y_Wave[IdxWindWave_f[k]])*PercentageOverlap_WindWave_f[k]\
+                    #     *MaxTurbinesWave_f[k,0]/AreaWindWave_f[k,0] for k in range(len(IdxWindWave_f)))\
+                    # -sum((AreaWindKite_f[k,1]/MaxTurbinesKite_f[k,1]*Model.Y_Kite[IdxWindKite_f[k]])*PercentageOverlap_WindKite_f[k]\
+                    #     *MaxTurbinesKite_f[k,0]/AreaWindKite_f[k,0] for k in range(len(IdxWindKite_f)))
                     
             return Expression
             
@@ -495,13 +535,12 @@ def SolvePortOpt_MaxGen_Model(PathWindDesigns, PathWaveDesigns, PathKiteDesigns,
             PercentageOverlap_KiteKite_f=PercentageOverlap_KiteKite[IdxOverlap_KiteKite[:,0]==i]
             
             #Compute the overlaped area and estimate the equivalent number of turbines that cannot be installed on the ith location anymore
-            Expression=Model.Y_Kite[i] <= InputDir["MaxNumKitePerSite"][i]\
-                    -sum((AreaKiteWind_f[k,1]/MaxTurbinesKiteWind_f[k,1]*Model.Y_Wind[IdxKiteWind_f[k]])*PercentageOverlap_KiteWind_f[k]\
-                        *MaxTurbinesKiteWind_f[k,0]/AreaKiteWind_f[k,0] for k in range(len(IdxKiteWind_f)))\
-                    -sum((AreaKiteWave_f[k,1]/MaxTurbinesKiteWave_f[k,1]*Model.Y_Wave[IdxKiteWave_f[k]])*PercentageOverlap_KiteWave_f[k]\
-                        *MaxTurbinesKiteWave_f[k,0]/AreaKiteWave_f[k,0] for k in range(len(IdxKiteWave_f)))\
-                    -sum((AreaKiteKite_f[k,1]/MaxTurbinesKiteKite_f[k,1]*Model.Y_Kite[IdxKiteKite_f[k]])*PercentageOverlap_KiteKite_f[k]\
-                        *MaxTurbinesKiteKite_f[k,0]/AreaKiteKite_f[k,0] for k in range(len(IdxKiteKite_f)))
+            Expression=Model.Y_Kite[i] <= InputDir["MaxNumKitePerSite"][i]-sum(Model.Y_Kite[IdxKiteKite_f[k]] for k in range(len(IdxKiteKite_f)))
+                    # -sum((AreaKiteWind_f[k,1]/MaxTurbinesKiteWind_f[k,1]*Model.Y_Wind[IdxKiteWind_f[k]])*PercentageOverlap_KiteWind_f[k]\
+                    #     *MaxTurbinesKiteWind_f[k,0]/AreaKiteWind_f[k,0] for k in range(len(IdxKiteWind_f)))\
+                    # -sum((AreaKiteWave_f[k,1]/MaxTurbinesKiteWave_f[k,1]*Model.Y_Wave[IdxKiteWave_f[k]])*PercentageOverlap_KiteWave_f[k]\
+                    #     *MaxTurbinesKiteWave_f[k,0]/AreaKiteWave_f[k,0] for k in range(len(IdxKiteWave_f)))\
+                    
             return Expression
         
         Model.OverlapKite_ALL= Constraint(list(IdxOvelap_UniqueKiteIdx), rule=TrackOverlaps_Kite_rule)
@@ -586,7 +625,7 @@ def SolvePortOpt_MaxGen_LCOE_Iterator(PathWindDesigns, PathWaveDesigns, PathKite
             print("Running Model With LCOE= %.2f" % LCOETarget)
             
             try:
-                results=opt.solve(Model, tee=False)
+                results=opt.solve(Model, tee=True)
             except:
                 Bypass=1
                 Model.del_component(Model.LCOE_Target)  
@@ -653,23 +692,26 @@ def SolvePortOpt_MaxGen_LCOE_Iterator(PathWindDesigns, PathWaveDesigns, PathKite
 
                 else:# Something else is wrong
                     Model.del_component(Model.LCOE_Target)
-                    SaveFeasibility.append(0)
-                    Save_LCOETarget.append(None)
-                    Save_LCOE_Achieved.append(None)
-                    SaveTotalMWAvg.append(None)   
+                    shape_wind = (InputDir["NumWindSites"],)
+                    shape_kite = (InputDir["NumKiteSites"],)
+                    shape_trans = (InputDir["NumTransSites"],)
+                    shape_time = (InputDir["NumTimeSteps"],)
+
+                    Save_Y_Wind.append(np.zeros(shape_wind))
+                    Save_Y_Wave.append(np.zeros(InputDir["NumWaveSites"]))  # Even if empty
+                    Save_Y_Kite.append(np.zeros(shape_kite))
                     
-                    Save_Y_Wind.append(None)
-                    Save_Y_Wave.append(None)
-                    Save_Y_Kite.append(None)
-                    Save_W_Wind.append(None)
-                    Save_W_Wave.append(None)
-                    Save_W_Kite.append(None)
-                    Save_s.append(None)
-                    Save_Delta.append(None)
-                    Save_TotalMWAvgWind.append(None)
-                    Save_TotalMWAvgWave.append(None)
-                    Save_TotalMWAvgKite.append(None)
-                    Save_totalMWAvgCurtailment.append(None)
+                    Save_W_Wind.append(np.zeros(MaxDesignsWind))
+                    Save_W_Wave.append(np.zeros(MaxDesingsWave))
+                    Save_W_Kite.append(np.zeros(MaxDesingsKite))
+                    
+                    Save_s.append(np.zeros(shape_trans))
+                    Save_Delta.append(np.zeros(shape_time))
+                    
+                    # For metrics:
+                    Save_TotalMWAvgWind.append(0.0)
+                    Save_TotalMWAvgKite.append(0.0) 
+                    Save_totalMWAvgCurtailment.append(0.0)
                     break
 
     #Save Results
@@ -677,7 +719,7 @@ def SolvePortOpt_MaxGen_LCOE_Iterator(PathWindDesigns, PathWaveDesigns, PathKite
         np.savez(SavePath, 
                 ReadMe=ReadMe,
                 #Model Inputs
-                PathWindDesigns=PathWindDesigns,
+                PathWindDesigns=np.array(PathWindDesigns, dtype=object),
                 PathWaveDesigns=PathWaveDesigns,
                 PathKiteDesigns=PathKiteDesigns,
                 PathTransmissionDesign=PathTransmissionDesign,
@@ -700,12 +742,12 @@ def SolvePortOpt_MaxGen_LCOE_Iterator(PathWindDesigns, PathWaveDesigns, PathKite
                 Save_TotalMWAvgKite=Save_TotalMWAvgKite,
                 Save_totalMWAvgCurtailment=Save_totalMWAvgCurtailment,
                 
-                Save_Y_Wind=Save_Y_Wind,
-                Save_Y_Wave=Save_Y_Wave,
-                Save_Y_Kite=Save_Y_Kite,
+                Save_Y_Wind=np.array(Save_Y_Wind, dtype=object),
+                Save_Y_Wave=np.array(Save_Y_Wave, dtype=object),
+                Save_Y_Kite=np.array(Save_Y_Kite, dtype=object),
                 Save_W_Wind=Save_W_Wind,
                 Save_W_Wave=Save_W_Wave,
                 Save_W_Kite=Save_W_Kite,
                 Save_s=Save_s,
-                Save_Delta=Save_Delta,
+                Save_Delta=Save_Delta, #Curtailed Energy
                 )

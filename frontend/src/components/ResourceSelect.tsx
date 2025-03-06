@@ -11,6 +11,8 @@ interface ResourceSelectInterface {
     lcoe_max: number,
     lcoe_min: number,
     lcoe_step: number,
+    start_year: number,
+    end_year: number,
   };
   setState: any;
 };
@@ -25,7 +27,7 @@ export default function ResourceSelect(props: ResourceSelectInterface) {
   };
 
   const dict: dictInterface = {
-    "8MW Vestas 2020": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_8MW_2020_Vestas.npz",
+    "8MW Vestas 2020": `Wind/Upscale3h_0.1Degree_${start_year}_${end_year}_GenCost_ATB_8MW_2020_Vestas.npz`,
     "12MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_12MW_2030.npz", 
     "15MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_15MW_2030.npz", 
     "18MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_18MW_2030.npz",

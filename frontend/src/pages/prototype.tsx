@@ -18,6 +18,8 @@ const Prototype = () => {
         lcoe_max: 120,
         lcoe_min: 30,
         lcoe_step: 4,
+        start_year: 2007,
+        end_year: 2007,
     });
 
     useEffect(() => {
