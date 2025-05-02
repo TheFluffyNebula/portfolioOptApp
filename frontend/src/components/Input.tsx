@@ -6,9 +6,47 @@ interface InputProps {
     placeholder: string;
     curr: string;
     step: string;
+    state: {
+        wind: string[],
+        wave: string[],
+        kite: string[],
+        transmission: string[],
+        lcoe_max: number,
+        lcoe_min: number,
+        lcoe_step: number,
+        start_year: number,
+        end_year: number,
+      };
+      setState: any;
 };
 
+
 const Input = (props: InputProps) => {
+    const onChangeHandler = (event) => {
+        if (props.label == "LCOE Min")
+        props.setState({...props.state, lcoe_min: parseInt(event.target.value)});
+
+        if (props.label == "LCOE Max")
+            props.setState({...props.state, lcoe_max: parseInt(event.target.value)});
+
+        if (props.label == "LCOE Step Size")
+            props.setState({...props.state, lcoe_step: parseInt(event.target.value)});
+        if (props.label == 'Max Trans. System Radius')
+            props.setState({...props.state, max_system_radius: parseInt(event.target.value)});
+        if (props.label == 'Number of Wind Devices / Resource')
+            props.setState({...props.state, WindTurbinesPerSite: parseInt(event.target.value)});
+        if (props.label == 'Number of Wind Devices / sq. km')
+            props.setState({...props.state, WindResolutionKm: parseInt(event.target.value)});
+
+        if (props.label == 'Number of Wave Devices / Resource')
+            props.setState({...props.state, WaveTurbinesPerSite: parseInt(event.target.value)});
+
+        if (props.label == 'Number of Kite Devices / Resource')
+            props.setState({...props.state, KiteTurbinesPerSite: parseInt(event.target.value)});
+
+        if (props.label == 'Number of Coaxial Devices / Resource')
+            props.setState({...props.state, CoaxialTurbinesPerSite: parseInt(event.target.value)});
+    };
     return (
         <div>
             <label htmlFor="price" className="block text-sm/6 font-medium text-gray-900">
@@ -22,6 +60,7 @@ const Input = (props: InputProps) => {
                         type={props.type}
                         step={props.step}
                         placeholder={props.placeholder}
+                        onChange={onChangeHandler}
                         className="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6 rounded-md"
                     />
                     <div className="grid shrink-1 grid-cols-1 focus-within:relative">

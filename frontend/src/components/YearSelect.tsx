@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ChevronUpDownIcon } from '@heroicons/react/16/solid'
 import { CheckIcon } from '@heroicons/react/20/solid'
@@ -8,37 +8,69 @@ import { CheckIcon } from '@heroicons/react/20/solid'
 const list = [
     {
         id: 1,
+        label: '2007',
+        value: 2007
+    },
+    {
+        id: 2,
+        label: '2008',
+        value: 2008
+    },
+    {
+        id: 3,
         label: '2009',
         value: 2009
     },
     {
-        id: 2,
+        id: 4,
         label: '2010',
         value: 2010
     },
     {
-        id: 3,
+        id: 5,
         label: '2011',
         value: 2011
     },
     {
-        id: 4,
+        id: 6,
         label: '2012',
         value: 2012
     },
     {
-        id: 5,
+        id: 7,
         label: '2013',
         value: 2013
     }
 ];
 
 interface YearSelectInterface {
-    label: string
+    label: string;
+    state: {
+        wind: string[],
+        wave: string[],
+        kite: string[],
+        coaxial: string[],
+        transmission: string[],
+        lcoe_max: number,
+        lcoe_min: number,
+        lcoe_step: number,
+        start_year: number,
+        end_year: number,
+    };
+    setState: any;
+    start: boolean;
 };
 
 const YearSelect = (props: YearSelectInterface) => {
-  const [selected, setSelected] = useState(list[1])
+  const [selected, setSelected] = useState(list[0]);
+
+  useEffect(() => {
+    if(props.start){
+        props.setState({...props.state, start_year: selected.value, wind: [], wave: [], kite: [], coaxial: []})
+    } else {
+        props.setState({...props.state, end_year: selected.value, wind: [], wave: [], kite: [], coaxial: []})
+    }
+  }, [selected]);
 
   return (
     <Listbox value={selected} onChange={setSelected}>

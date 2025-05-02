@@ -7,7 +7,8 @@ interface ResourceSelectInterface {
     wind: string[],
     wave: string[],
     kite: string[],
-    tranmission: string[],
+    coaxial: string[],
+    transmission: string[],
     lcoe_max: number,
     lcoe_min: number,
     lcoe_step: number,
@@ -21,28 +22,30 @@ export default function ResourceSelect(props: ResourceSelectInterface) {
   const windDesigns = [ "8MW Vestas 2020", "12MW 2030", "15MW 2030", "18MW 2030" ];
   const kiteDesigns = [ "0.05MW (0.5m/s)", "0.14MW (0.75m/s)", "0.31MW (1.0m/s)", "0.57MW (1.25m/s)", "0.93MW (1.5m/s)", "1.43MW (1.75m/s)", "2.04MW (2.0m/s)", "1.987MW (2.25m/s)", "1.87MW (2.5m/s)", "1.81MW (2.75m/s)" ];
   const waveDesigns = [ "Pelamis", "RM3" ];
+  const coaxialDesigns = [ "0.6MW (1.0m/s)", "1.0MW (1.5m/s)", "1.75MW (1.75m/s)", "2.0MW (1.75m/s)", "1.5MW (1.5m/s)" ];
 
   interface dictInterface {
     [key: string]:string
   };
 
   const dict: dictInterface = {
-    "8MW Vestas 2020": `Wind/Upscale3h_0.1Degree_${start_year}_${end_year}_GenCost_ATB_8MW_2020_Vestas.npz`,
-    "12MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_12MW_2030.npz", 
-    "15MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_15MW_2030.npz", 
-    "18MW 2030": "Wind/Upscale3h_0.1Degree_2007_2013_GenCost_ATB_18MW_2030.npz",
-    "0.05MW (0.5m/s)": "",
-    "0.14MW (0.75m/s)": "",
-    "0.31MW (1.0m/s)": "",
-    "0.57MW (1.25m/s)": "",
-    "0.93MW (1.5m/s)": "",
-    "1.43MW (1.75m/s)": "",
-    "2.04MW (2.0m/s)": "",
-    "1.987MW (2.25m/s)": "",
-    "1.87MW (2.5m/s)": "", 
-    "1.81MW (2.75m/s)": "",
-    "Pelamis": "",
-    "RM3": ""
+    "8MW Vestas 2020": `Wind/Upscale3h_0.1Degree_${props.state.start_year}_${props.state.end_year}_GenCost_ATB_8MW_2020_Vestas.npz`,
+    "12MW 2030": `Wind/Upscale3h_0.1Degree_${props.state.start_year}_${props.state.end_year}_GenCost_ATB_12MW_2030.npz`, 
+    "15MW 2030": `Wind/Upscale3h_0.1Degree_${props.state.start_year}_${props.state.end_year}_GenCost_ATB_15MW_2030.npz`, 
+    "18MW 2030": `Wind/Upscale3h_0.1Degree_${props.state.start_year}_${props.state.end_year}_GenCost_ATB_18MW_2030.npz`,
+    "0.05MW (0.5m/s)": `OceanCurrent/PowerTimeSeriesKite_VD50_BCS0.5_${props.state.start_year}_${props.state.end_year}.npz`,
+    "0.14MW (0.75m/s)": `OceanCurrent/PowerTimeSeriesKite_VD50_BCS0.75_${props.state.start_year}_${props.state.end_year}.npz`,
+    "0.31MW (1.0m/s)": `OceanCurrent/PowerTimeSeriesKite_VD50_BCS1.0_${props.state.start_year}_${props.state.end_year}.npz`,
+    "0.57MW (1.25m/s)": `OceanCurrent/PowerTimeSeriesKite_VD50_BCS1.25_${props.state.start_year}_${props.state.end_year}.npz`,
+    "0.93MW (1.5m/s)": `OceanCurrent/PowerTimeSeriesKite_VD50_BCS1.5_${props.state.start_year}_${props.state.end_year}.npz`,
+    "1.43MW (1.75m/s)": `OceanCurrent/PowerTimeSeriesKite_VD50_BCS1.75_${props.state.start_year}_${props.state.end_year}.npz`,
+    "2.04MW (2.0m/s)": `OceanCurrent/PowerTimeSeriesKite_VD50_BCS2.0_${props.state.start_year}_${props.state.end_year}.npz`,
+    "1.987MW (2.25m/s)": `OceanCurrent/PowerTimeSeriesKite_VD50_BCS2.25_${props.state.start_year}_${props.state.end_year}.npz`,
+    "1.87MW (2.5m/s)": `OceanCurrent/PowerTimeSeriesKite_VD50_BCS2.5_${props.state.start_year}_${props.state.end_year}.npz`,
+    "1.81MW (2.75m/s)": `OceanCurrent/PowerTimeSeriesKite_VD50_BCS2.75_${props.state.start_year}_${props.state.end_year}.npz`,
+    "Pelamis": `Wave/${props.state.start_year}_${props.state.end_year}_Pelamis.npz`,
+    "RM3": `Wave/${props.state.start_year}_${props.state.end_year}_RM3.npz`,
+    "0.6MW (1.0m/s)": "",
   };
 
   const transmissionSystem = [ '1.2GW', '1.0GW', '0.6GW', '0.3GW', '0.1GW' ];
@@ -103,7 +106,7 @@ export default function ResourceSelect(props: ResourceSelectInterface) {
         <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
           {waveDesigns.map(elem => {
             return <div className="flex" key={elem}>
-            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} onClick={(e) => {
+            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} value={elem} onClick={(e) => {
                   let wave_tmp: string[] = props.state.wave;
                   if(props.state.wave.includes(dict[e.target.value])){
                     wave_tmp = wave_tmp.filter(elem => elem !== dict[e.target.value]);
@@ -111,6 +114,25 @@ export default function ResourceSelect(props: ResourceSelectInterface) {
                     wave_tmp.push(dict[e.target.value]);
                   }
                   props.setState({...props.state, wave: wave_tmp })
+                }}/>
+            <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
+          </div>
+          })}
+        </div>
+
+        <p className="mt-5 text-sm not-italic mb-1" style={{ textDecorationColor: colorPallete.primary }}>Coaxial</p>
+        <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }}></div>
+        <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
+          {coaxialDesigns.map(elem => {
+            return <div className="flex" key={elem}>
+            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} value={elem} onClick={(e) => {
+                  let coaxial_tmp: string[] = props.state.coaxial;
+                  if(props.state.coaxial.includes(dict[e.target.value])){
+                    coaxial_tmp = coaxial_tmp.filter(elem => elem !== dict[e.target.value]);
+                  } else {
+                    coaxial_tmp.push(dict[e.target.value]);
+                  }
+                  props.setState({...props.state, coaxial: coaxial_tmp })
                 }}/>
             <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
           </div>

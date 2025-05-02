@@ -17,29 +17,102 @@ const api = {
         );
         return data;
     },
-    generateEfficientFrontiers: async (
-        resourceType,
-        transmission,
-        lcoe_max=120,
-        lcoe_min=100,
-        lcoe_step=4,
-    ) => {
-        const dataObj = {
-            resourceType,
-            transmission,
-            lcoe_max,
-            lcoe_min,
-            lcoe_step
-        };
+    resourceUpload: async (apiData) => {
+        console.log(apiData)
         const data = await axios.post(
-            `${url}/generate`,
+            `${url}/resourceUpload`,
+            apiData,
             {
                 method: "POST",
                 headers: {
-                    'Content-type': 'application-json',
                     'Access-Control-Allow-Origin': '*',
                 },
-                body: JSON.stringify(dataObj)
+                body: apiData,
+            }
+        );
+        return data;
+    },
+    generateWindBinaries: async (apiData) => {
+        const data = await axios.post(
+            `${url}/generateWindBinaries`,
+            apiData,
+            {
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+            }
+        );
+        return data;
+    },
+    windInputGeneration: async (apiData) => {
+        const data = await axios.post(
+            `${url}/windInputGeneration`,
+            apiData,
+            {
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+            }
+        );
+        return data;
+    },
+    kiteInputGeneration: async (apiData) => {
+        const data = await axios.post(
+            `${url}/kiteInputGeneration`,
+            apiData,
+            {
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+            }
+        );
+        return data;
+    },
+    waveInputGeneration: async (apiData) => {
+        const data = await axios.post(
+            `${url}/waveInputGeneration`,
+            apiData,
+            {
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+            }
+        );
+        return data;
+    },
+    portfolioOptimization: async (apiData) => {
+        const data = await axios.post(
+            `${url}/portfolioOptimization`,
+            apiData,
+            {
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+            }
+        );
+        return data;
+    },
+    portfolioPlots: async (portfolio) => {
+        const data = await axios.post(
+            `${url}/portfolioPlots`,
+            portfolio,
+            {
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                responseType: 'blob'
             }
         );
         return data;

@@ -1,37 +1,56 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ChevronUpDownIcon } from '@heroicons/react/16/solid'
 import { CheckIcon } from '@heroicons/react/20/solid'
 
 import { WIND_ENERGY, WAVE_ENERGY, KITE_ENERGY, OCEAN_ENERGY } from '../constants/names';
 
+interface TransmissionCapSelectInterface {
+    state: {
+      wind: string[],
+      wave: string[],
+      kite: string[],
+      transmission: string[],
+      lcoe_max: number,
+      lcoe_min: number,
+      lcoe_step: number,
+      start_year: number,
+      end_year: number,
+    };
+    setState: any;
+  };
+
 const list = [
     {
         id: 1,
         label: '300 MW',
-        value: 300
+        value: 'Transmission/Transmission_300MW.npz'
     },
     {
         id: 2,
         label: '600 MW',
-        value: 600
+        value: 'Transmission/Transmission_600MW.npz'
     },
     {
         id: 3,
         label: '1000 MW',
-        value: 1000
+        value: 'Transmission/Transmission_1000MW.npz'
     },
     {
         id: 4,
         label: '1200 MW',
-        value: 1200
+        value: 'Transmission/Transmission_1200MW.npz'
     }
 ];
 
-const TransmissionCapSelect = () => {
-  const [selected, setSelected] = useState(list[1])
+const TransmissionCapSelect = (props: TransmissionCapSelectInterface) => {
+  const [selected, setSelected] = useState(list[0])
+
+  useEffect(() => {
+        props.setState({...props.state, transmission: [selected.value]})
+  }, [selected]);
 
   return (
     <Listbox value={selected} onChange={setSelected}>
