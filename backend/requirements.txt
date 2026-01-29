@@ -10,7 +10,7 @@ xarray
 NREL-rex
 geopandas
 shapely
-fiona==1.9.6
+fiona
 xarray
 pyomo
 gurobipy

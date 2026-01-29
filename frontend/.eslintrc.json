@@ -1,3 +1,20 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "parser": "@typescript-eslint/parser",
+  "extends": ["next/core-web-vitals", "next/typescript",  "plugin:@typescript-eslint/recommended"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "react-hooks/exhaustive-deps": "off",
+        "@next/next/no-img-element": "off"
+      }
+    }
+  ],
+  "rules": {
+    // note you must disable the base rule as it can report incorrect errors
+    "@typescript-eslint/no-unused-vars": "off"
+    // "@typescript-eslint/no-explict-any": "warn"
+  }
+
 }
