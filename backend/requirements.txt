@@ -1,0 +1,16 @@
+flask
+flask_cors
+matplotlib
+h5pyd
+numpy
+pandas
+tqdm
+geopandas
+xarray
+NREL-rex
+geopandas
+shapely
+fiona
+xarray
+pyomo
+gurobipy
