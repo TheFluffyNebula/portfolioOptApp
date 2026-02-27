@@ -38,6 +38,25 @@ const Prototype = () => {
         CoaxialTurbinesPerSite: 390
     });
 
+    // map each option to its coordinates
+    const STATE_RANGES: Record<string, { lat: [number, number]; lon: [number, number] }> = {
+        fl: { lat: [24.2, 31.0], lon: [-81, -65] },
+        ga: { lat: [30.6, 32.2], lon: [-81, -65] },
+        sc: { lat: [32.0, 34.0], lon: [-81, -65] },
+        nc: { lat: [33.7, 36.6], lon: [-81, -65] },
+        va: { lat: [36.4, 38.2], lon: [-81, -65] },
+        md: { lat: [38.0, 38.6], lon: [-81, -65] },
+        de: { lat: [38.4, 39.5], lon: [-81, -65] },
+        nj: { lat: [38.8, 41.0], lon: [-81, -65] },
+        ny: { lat: [40.4, 41.5], lon: [-81, -65] },
+        ct: { lat: [41.2, 41.5], lon: [-81, -65] },
+        ri: { lat: [41.1, 41.5], lon: [-81, -65] },
+        ma: { lat: [41.1, 42.9], lon: [-81, -65] },
+        nh: { lat: [42.8, 43.3], lon: [-81, -65] },
+        me: { lat: [43.0, 45.5], lon: [-81, -65] },
+        custom: { lat: [0, 0], lon: [0, 0] }
+    };
+
     const [files, setFiles] = useState([]);
 
     const [ portfolio, setPortfolio ] = useState([]);
@@ -48,6 +67,20 @@ const Prototype = () => {
     });
 
     const [imgSrc, setImgSrc] = useState("");
+
+    const [coords, setCoords] = useState({
+            latStart: 0,
+            latEnd: 0,
+            lonStart: 0,
+            lonEnd: 0,})
+
+    useEffect(() => {
+        console.log(useApiData)
+    }, [useApiData]);
+
+    useEffect(() => {
+        console.log(state);
+    }, [state]);
 
     const handleChange = (e:any) => {
         setFiles(Array.from(e.target.files));
@@ -82,10 +115,6 @@ const Prototype = () => {
         console.log(response);
         // alert(data.message || "Upload complete!");
     }
-
-    useEffect(() => {
-        console.log(useApiData)
-    }, [useApiData]);
 
     const handleWindDownload = async () => {
         if(useApiData.WindResolutionKm !== 2){
@@ -166,9 +195,27 @@ const Prototype = () => {
         console.log(imageURL);
     };
 
-    useEffect(() => {
-        console.log(state);
-    }, [state]);
+    // Update all fields when dropdown changes
+    const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        console.log("hiya!");
+        const val = e.target.value;
+        const range = STATE_RANGES[val];
+        if (range) {
+            setCoords({
+                latStart: range.lat[0],
+                latEnd: range.lat[1],
+                lonStart: range.lon[0],
+                lonEnd: range.lon[1],
+            });
+        }
+    };
+
+    // Update individual fields so they remain editable
+    const handleInputChange = (field: keyof typeof coords, value: string) => {
+        console.log("handling input change");
+        setCoords(prev => ({ ...prev, [field]: parseFloat(value) || 0 }));
+    };
+
     return (
         <div className='w-2/3 lg:w-1/3 flex flex-col items-center justify-center'>
             {state.load === true ? <div>
@@ -215,11 +262,54 @@ const Prototype = () => {
 
                 <div className='m-3 mb-8 w-full'>
                 <p className="mb-3 not-italic underline decoration-4 underline-offset-4" style={{ textDecorationColor: colorPallete.primary }}>Location</p>
+                    <label htmlFor="location-presets">Choose a preset or custom:</label>
+                    <select 
+                        name="location-presets" 
+                        id="location-presets" 
+                        onChange={handlePresetChange}
+                        className="block mb-4 border p-2"
+                    >
+                        <option value="custom">Custom</option>
+                        <option value="fl">Florida</option>
+                        <option value="ga">Georgia</option>
+                        <option value="sc">South Carolina</option>
+                        <option value="nc">North Carolina</option>
+                        <option value="va">Virginia</option>
+                        <option value="md">Maryland</option>
+                        <option value="de">Delaware</option>
+                        <option value="nj">New Jersey</option>
+                        <option value="ny">New York</option>
+                        <option value="ct">Connecticut</option>
+                        <option value="ri">Rhode Island</option>
+                        <option value="ma">Massachusetts</option>
+                        <option value="nh">New Hampshire</option>
+                        <option value="me">Maine</option>
+                    </select>
                     <div className='grid grid-cols-2 gap-6 justify-center'>
-                        <Input label='Latitude Start' step="0.01" type='number' placeholder='0' curr='deg'/>
-                        <Input label='Latitude End' step="0.01" type='number' placeholder='0' curr='deg'/>
-                        <Input label='Longitude Start' type='number' step="0.01" placeholder='0' curr='deg'/>
-                        <Input label='Longitude End' type='number' step="0.01" placeholder='0' curr='deg'/>
+                        <Input 
+                        label='Latitude Start' 
+                        value={coords.latStart} 
+                        onChange={(e) => handleInputChange('latStart', e.target.value)}
+                        step="0.01" type='number' curr='deg'
+                        />
+                        <Input 
+                        label='Latitude End' 
+                        value={coords.latEnd} 
+                        onChange={(e) => handleInputChange('latEnd', e.target.value)}
+                        step="0.01" type='number' curr='deg'
+                        />
+                        <Input 
+                        label='Longitude Start' 
+                        value={coords.lonStart} 
+                        onChange={(e) => handleInputChange('lonStart', e.target.value)}
+                        step="0.01" type='number' curr='deg'
+                        />
+                        <Input 
+                        label='Longitude End' 
+                        value={coords.lonEnd} 
+                        onChange={(e) => handleInputChange('lonEnd', e.target.value)}
+                        step="0.01" type='number' curr='deg'
+                        />
                     </div>
                 </div>
 
