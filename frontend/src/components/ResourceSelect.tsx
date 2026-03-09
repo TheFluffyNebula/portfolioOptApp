@@ -67,7 +67,8 @@ export default function ResourceSelect(props: ResourceSelectInterface) {
         <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
           {windDesigns.map(elem => {
             return <div className="flex" key={elem}>
-              <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} value={elem} onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+              <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" 
+              id={elem} value={elem} checked={props.state.wind.includes(dict[elem])} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   let wind_tmp: string[] = props.state.wind;
                   const val = e.currentTarget.value;
                   if(props.state.wind.includes(dict[val])){
