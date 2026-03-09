@@ -35,7 +35,11 @@ const Prototype = () => {
         WindResolutionKm: 2,
         KiteTurbinesPerSite: 390, 
         WaveTurbinesPerSite: 300, 
-        CoaxialTurbinesPerSite: 390
+        CoaxialTurbinesPerSite: 390,
+        lat_start: 0,
+        lat_end: 0,
+        lon_start: 0,
+        lon_end: 0,
     });
 
     // map each option to its coordinates
@@ -81,6 +85,16 @@ const Prototype = () => {
     useEffect(() => {
         console.log(state);
     }, [state]);
+
+    useEffect(() => {
+        setUseApiData(prev => ({
+            ...prev,
+            lat_start: coords.latStart,
+            lat_end: coords.latEnd,
+            lon_start: coords.lonStart,
+            lon_end: coords.lonEnd,
+        }));
+    }, [coords]);
 
     const handleChange = (e:any) => {
         setFiles(Array.from(e.target.files));
