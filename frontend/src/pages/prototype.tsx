@@ -328,7 +328,8 @@ const Prototype = () => {
                 </div>
 
                 <div className='m-3 w-full'>
-                <p className="mb-3 not-italic underline decoration-4 underline-offset-4" style={{ textDecorationColor: colorPallete.primary }}>Technicals</p>
+                <p className="mb-3 not-italic underline decoration-4 underline-offset-4" 
+                style={{ textDecorationColor: colorPallete.primary }}>Technicals</p>
                     <div className='grid grid-cols-2 gap-6 justify-center'>
                         <TransmissionCapSelect state={useApiData} setState={setUseApiData}/>
                         <Input label='Max Trans. System Radius' type='number' step="0.01" placeholder='30' curr='mi' state={useApiData} setState={setUseApiData}/>
