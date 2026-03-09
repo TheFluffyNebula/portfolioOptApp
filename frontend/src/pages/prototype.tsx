@@ -218,13 +218,13 @@ const Prototype = () => {
 
     return (
         <div className='w-2/3 lg:w-1/3 flex flex-col items-center justify-center'>
-            {state.load === true ? <div>
+            {state.load && (
                 <div className='w-full'>
-                    <span className="self-center text-xl mt-5 mb-5 whitespace-nowrap align-middle h-full m-2">Loading: {state.value}%</span>
+                    <span className="...">Loading: {state.value}%</span>
                     <PercentLoader width={state.value}/>
                 </div>
-            </div> : 
-            (<div className='w-full flex flex-col justify-items-start items-start'>
+            )}
+            <div className='w-full flex flex-col justify-items-start items-start'>
             <span className="self-center text-4xl mt-5 mb-5 whitespace-nowrap align-middle h-full">Portfolio Optimization</span>
                 <div className='m-3 mb-8 w-full'>
                     <p className="mb-3 not-italic underline decoration-4 underline-offset-4" style={{ textDecorationColor: colorPallete.primary }}>Resources</p>
@@ -343,14 +343,13 @@ const Prototype = () => {
                 </div>
                 <button onClick={async () => {
                     setState({load: true, value: 0})
-                    const path = await handleOnClick();
-                    setState({load: false, value: 100})
-                    await postClickHandle(path);
+          const path = await handleOnClick();
+          setState({load: false, value: 100})
+          await postClickHandle(path);
                 }} className="inline-flex items-center w-full justify-center m-3 mt-8 px-3 py-2 text-sm font-medium text-center text-white rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300" style={{
                     backgroundColor: colorPallete.primary
                 }}>Generate Efficient Frontiers</button>
-            </div>)
-            }
+            </div>
             <img id='image' src={imgSrc} className='w-full h-full' />
         </div>
     );
