@@ -29,6 +29,11 @@ const Input = (props: InputProps) => {
         "Max Water Depth": "max_water_depth"
     };
 
+    const key = labelMap[props.label];
+    const resolvedValue = props.value !== undefined
+        ? props.value
+        : (props.state && key) ? props.state[key] : "";
+
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         const rawValue = event.target.value;
         // 1. Trigger the coordinate change handler if passed (Location fields)
@@ -64,7 +69,7 @@ const Input = (props: InputProps) => {
                         placeholder={props.placeholder}
                         // Convert to Number and back to String to strip leading zeros
                         // but only if it's not empty (to allow backspacing)
-                        value={props.value === "" ? "" : Number(props.value).toString()} 
+                        value={resolvedValue === "" ? "" : Number(resolvedValue).toString()}
                         onChange={onChangeHandler}
                         className="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 focus:outline-none sm:text-sm/6 rounded-md"
                     />
