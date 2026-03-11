@@ -49,6 +49,23 @@ export default function ResourceSelect(props: ResourceSelectInterface) {
   };
 
   const transmissionSystem = [ '1.2GW', '1.0GW', '0.6GW', '0.3GW', '0.1GW' ];
+
+  const resourceGroups: {label: string; key: 'wind' | 'kite' | 'wave' | 'coaxial'; designs: string[] }[] = [
+    { label: 'Wind',    key: 'wind',    designs: windDesigns },
+    { label: 'Kite',    key: 'kite',    designs: kiteDesigns },
+    { label: 'Wave',    key: 'wave',    designs: waveDesigns },
+    { label: 'Coaxial', key: 'coaxial', designs: coaxialDesigns },
+  ];
+
+  const handleToggle = (key: 'wind' | 'kite' | 'wave' | 'coaxial', val: string) => {
+    const current: string[] = props.state[key];
+    const path = dict[val];
+    const updated = current.includes(path)
+      ? current.filter(e => e !== path)
+      : [...current, path];
+    props.setState({ ...props.state, [key]: updated });
+  };
+
   return (
     <Menu as="div" className="relativeinline-block text-left">
       <div>
@@ -62,87 +79,30 @@ export default function ResourceSelect(props: ResourceSelectInterface) {
         transition
         className="absolute z-10 mt-2 p-4 mx-auto origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in grid place-content-center py-8"
       >
-        <p className="text-sm not-italic mb-1" style={{ textDecorationColor: colorPallete.primary }}>Wind</p>
-        <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }}></div>
-        <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
-          {windDesigns.map(elem => {
-            return <div className="flex" key={elem}>
-              <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" 
-              id={elem} value={elem} checked={props.state.wind.includes(dict[elem])} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  let wind_tmp: string[] = props.state.wind;
-                  const val = e.currentTarget.value;
-                  if(props.state.wind.includes(dict[val])){
-                    wind_tmp = wind_tmp.filter(elem => elem !== dict[val]);
-                  } else {
-                    wind_tmp.push(dict[val]);
-                  }
-                  props.setState({...props.state, wind: wind_tmp })
-                }}
-              />
-              <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
+        {resourceGroups.map(({ label, key, designs }) => (
+        <div key={key}>
+          <p className="mt-5 text-sm not-italic mb-1" style={{ textDecorationColor: colorPallete.primary }}>
+            {label}
+          </p>
+          <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }} />
+          <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
+            {designs.map(elem => (
+              <div className="flex" key={elem}>
+                <input
+                  type="checkbox"
+                  className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
+                  id={elem}
+                  checked={props.state[key].includes(dict[elem])}
+                  onChange={() => handleToggle(key, elem)}
+                />
+                <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">
+                  {elem}
+                </label>
+              </div>
+            ))}
           </div>
-          })}
         </div>
-
-        <p className="mt-5 text-sm not-italic mb-1" style={{ textDecorationColor: colorPallete.primary }}>Kite</p>
-        <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }}></div>
-        <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
-          {kiteDesigns.map(elem => {
-            return <div className="flex" key={elem}>
-            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} value={elem} onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                  let kite_tmp: string[] = props.state.kite;
-                  const val = e.currentTarget.value;
-                  if(props.state.kite.includes(dict[val])){
-                    kite_tmp = kite_tmp.filter(elem => elem !== dict[val]);
-                  } else {
-                    kite_tmp.push(dict[val]);
-                  }
-                  props.setState({...props.state, kite: kite_tmp })
-                }}/>
-            <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
-          </div>
-          })}
-        </div>
-
-        <p className="mt-5 text-sm not-italic mb-1" style={{ textDecorationColor: colorPallete.primary }}>Wave</p>
-        <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }}></div>
-        <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
-          {waveDesigns.map(elem => {
-            return <div className="flex" key={elem}>
-            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} value={elem} onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                  let wave_tmp: string[] = props.state.wave;
-                  const val = e.currentTarget.value;
-                  if(props.state.wave.includes(dict[val])){
-                    wave_tmp = wave_tmp.filter(elem => elem !== dict[val]);
-                  } else {
-                    wave_tmp.push(dict[val]);
-                  }
-                  props.setState({...props.state, wave: wave_tmp })
-                }}/>
-            <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
-          </div>
-          })}
-        </div>
-
-        <p className="mt-5 text-sm not-italic mb-1" style={{ textDecorationColor: colorPallete.primary }}>Coaxial</p>
-        <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }}></div>
-        <div className="grid grid-cols-3 gap-x-8 gap-y-2 grid-flow-row">
-          {coaxialDesigns.map(elem => {
-            return <div className="flex" key={elem}>
-            <input type="checkbox" className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id={elem} value={elem} onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                  let coaxial_tmp: string[] = props.state.coaxial;
-                  const val = e.currentTarget.value;
-                  if(props.state.coaxial.includes(dict[val])){
-                    coaxial_tmp = coaxial_tmp.filter(elem => elem !== dict[val]);
-                  } else {
-                    coaxial_tmp.push(dict[val]);
-                  }
-                  props.setState({...props.state, coaxial: coaxial_tmp })
-                }}/>
-            <label htmlFor={elem} className="text-sm text-gray-500 ms-3 dark:text-neutral-400">{elem}</label>
-          </div>
-          })}
-        </div>
+      ))}
           {/* TRANSMISSION CAPACITY SYSTEMS */}
         {/* <p className="mt-5 text-sm not-italic" style={{ textDecorationColor: colorPallete.primary }}>Transmission System Capacity</p>
         <div className='w-full h-0.5 mb-2' style={{ backgroundColor: colorPallete.primary }}></div>
@@ -154,7 +114,6 @@ export default function ResourceSelect(props: ResourceSelectInterface) {
           </div>
           })}
         </div> */}
-
       </MenuItems>
     </Menu>
   )
