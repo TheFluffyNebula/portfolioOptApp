@@ -300,15 +300,14 @@ def kiteInputGeneration():
             
             if max_year == min_year:
                 import shutil
-                source_file = './OutputData/OceanCurrent/' + f'{min_year}_' + 'PowerTimeSeriesKite_VD'+str(VD)+'_BCS'+str(BCS)+'.npz'
-                base, ext = os.path.splitext(source_file)
-        
-                # Construct the path for the new file
                 new_file = './OutputData/OceanCurrent/' + 'PowerTimeSeriesKite_VD'+str(VD)+'_BCS'+str(BCS) + f"_{min_year}_{max_year}.npz"
-                
-                # Copy the file with the new name
-                shutil.copy2(source_file, new_file)
-                print(f"File '{source_file}' copied to '{new_file}'")
+
+                if os.path.exists(new_file):
+                    print(f"'{new_file}' already exists (uploaded by user), skipping copy.")
+                else:
+                    source_file = './OutputData/OceanCurrent/' + f'{min_year}_' + 'PowerTimeSeriesKite_VD'+str(VD)+'_BCS'+str(BCS)+'.npz'
+                    shutil.copy2(source_file, new_file)
+                    print(f"File '{source_file}' copied to '{new_file}'")
             else:
                 for year in tqdm(range(min_year,max_year)):
                     StartDTime=datetime(year, 1, 1, 0, 0, 0) #datetime(2007, 1, 1, 0, 0, 0) 
