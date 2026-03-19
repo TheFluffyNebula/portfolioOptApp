@@ -97,15 +97,16 @@ const Prototype = () => {
     }, [coords]);
 
     const handleChange = (e:any) => {
-        setFiles(Array.from(e.target.files));
+        const selectedFiles = Array.from(e.target.files) as File[];
+        setFiles(selectedFiles);
 
-        Array.from(e.target.files).forEach((item: File) => {
-            if(item.name.includes("PowerTimeSeriesKite")){
-                const kite = useApiData.kite;
-                kite.push("OceanCurrent/" + item.name);
-                setUseApiData({...useApiData, kite: kite})
-            }
-        });
+        const newKitePaths = selectedFiles
+            .filter((item: File) => item.name.includes("PowerTimeSeriesKite"))
+            .map((item: File) => "OceanCurrent/" + item.name);
+
+        if (newKitePaths.length > 0) {
+            setUseApiData(prev => ({ ...prev, kite: [...prev.kite, ...newKitePaths] }));
+        }
       };
     
     const handleUpload = async () => {
