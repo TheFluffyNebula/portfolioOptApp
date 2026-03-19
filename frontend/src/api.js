@@ -23,11 +23,9 @@ const api = {
             `${url}/resourceUpload`,
             apiData,
             {
-                method: "POST",
                 headers: {
                     'Access-Control-Allow-Origin': '*',
                 },
-                body: apiData,
             }
         );
         return data;
