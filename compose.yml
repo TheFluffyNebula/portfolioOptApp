@@ -2,7 +2,7 @@ services:
   nextapp:
     container_name: nextapp
     image: nextapp:1.0.0
-    build: 
+    build:
       context: ./frontend
       dockerfile: next.dockerfile
     ports:
@@ -15,18 +15,19 @@ services:
   flaskapp:
     container_name: flaskapp
     image: flaskapp:1.0.0
-    build: 
+    build:
       context: ./backend
       dockerfile: flask.dockerfile
     ports:
       - 4000:4000
     volumes:
-      # standard host (where it is on this device):container (where it is in the container) syntax
       - ./backend/InputData:/app/InputData
-      - ./backend/OceanPortfolioOptimization:/app/OceanPortfolioOptimization
       - ./backend/OutputData:/app/OutputData
+      # Place your gurobi.lic file in the project root (same folder as compose.yml)
+      - ./gurobi.lic:/root/gurobi.lic
     environment:
       - hsds_endpoint=https://developer.nrel.gov/api/hsds
       - H5SERV_ENDPOINT=https://developer.nrel.gov/api/hsds
       - hs_api_key=N4K0MbpR1xdbev9HMX6cYpQesal7KcNDtA7oIfz2
       - hs_bucket=nrel-pds-hsds
+      - GRB_LICENSE_FILE=/root/gurobi.lic

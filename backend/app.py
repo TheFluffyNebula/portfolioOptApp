@@ -163,6 +163,12 @@ def merge_kite_years(min_year, max_year, BCS):
     VerticalDepth=[50, 100, 150, 200]
     i_vd=0
 
+    # Skip merge if the output file already exists (e.g. uploaded by user)
+    output_path = './OutputData/OceanCurrent/' + 'PowerTimeSeriesKite_VD' + str(VerticalDepth[i_vd]) + '_BCS' + str(BCS) + f'_{min_year}_{max_year}.npz'
+    if os.path.exists(output_path):
+        print(f"{output_path} already exists, skipping merge.")
+        return
+
     for year in tqdm(years):
         SavePowerTimeSeriesPath='./OutputData/OceanCurrent/'+str(year)+"_"
         PathKiteParams=SavePowerTimeSeriesPath+'PowerTimeSeriesKite_VD'+str(VerticalDepth[i_vd])+'_BCS'+str(BCS)+'.npz'
@@ -294,15 +300,14 @@ def kiteInputGeneration():
             
             if max_year == min_year:
                 import shutil
-                source_file = './OutputData/OceanCurrent/' + f'{min_year}_' + 'PowerTimeSeriesKite_VD'+str(VD)+'_BCS'+str(BCS)+'.npz'
-                base, ext = os.path.splitext(source_file)
-        
-                # Construct the path for the new file
                 new_file = './OutputData/OceanCurrent/' + 'PowerTimeSeriesKite_VD'+str(VD)+'_BCS'+str(BCS) + f"_{min_year}_{max_year}.npz"
-                
-                # Copy the file with the new name
-                shutil.copy2(source_file, new_file)
-                print(f"File '{source_file}' copied to '{new_file}'")
+
+                if os.path.exists(new_file):
+                    print(f"'{new_file}' already exists (uploaded by user), skipping copy.")
+                else:
+                    source_file = './OutputData/OceanCurrent/' + f'{min_year}_' + 'PowerTimeSeriesKite_VD'+str(VD)+'_BCS'+str(BCS)+'.npz'
+                    shutil.copy2(source_file, new_file)
+                    print(f"File '{source_file}' copied to '{new_file}'")
             else:
                 for year in tqdm(range(min_year,max_year)):
                     StartDTime=datetime(year, 1, 1, 0, 0, 0) #datetime(2007, 1, 1, 0, 0, 0) 
@@ -369,7 +374,9 @@ def waveInputGeneration():
 
         for wave in waves:
             if not os.path.exists(f'./OutputData/{wave}'):
-                with np.load('./OutputData/Wave/2005_2019_RM3.npz', allow_pickle=True) as data:
+                wave_type = 'Pelamis' if 'Pelamis' in wave else 'RM3'
+                source_wave_file = f'./OutputData/Wave/2005_2019_{wave_type}.npz'
+                with np.load(source_wave_file, allow_pickle=True) as data:
                     time_list = data['TimeList']  # assuming shape (39700,)
                     
                     # Create mask by comparing the year attribute (2009 <= year <= 2013)
@@ -563,7 +570,7 @@ def portfolioPlots():
             '18MW_2030': '18MW 2030',
             'PowerTimeSeriesKite_VD50_BCS0.5': '0.05MW (0.5m/s)',
             'PowerTimeSeriesKite_VD50_BCS0.75': '0.14MW (0.75m/s)',
-            'PowerTimeSeriesKite_VD50_BCS0.1.0': '0.31MW (1.0m/s)',
+            'PowerTimeSeriesKite_VD50_BCS1.0': '0.31MW (1.0m/s)',
             'PowerTimeSeriesKite_VD50_BCS1.25': '0.57MW (1.25m/s)',
             'PowerTimeSeriesKite_VD50_BCS1.5': '0.93MW (1.5m/s)',
             'PowerTimeSeriesKite_VD50_BCS1.75': '1.43MW (1.75m/s)',
@@ -613,7 +620,7 @@ def portfolioPlots():
             
         # return send_file(buf, mimetype='image/jpeg')
     else:
-        return jsonify({"error": f"Plot not found: {str(e)}"}), 404
+        return jsonify({"error": f"Plot not found at {SavePath}"}), 404
 
 
 @app.route('/generateWindBinaries', methods=['GET', 'POST'])

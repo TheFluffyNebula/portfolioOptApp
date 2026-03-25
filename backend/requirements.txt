@@ -1,5 +1,6 @@
 flask
 flask_cors
+Pillow
 matplotlib
 h5pyd
 numpy
@@ -8,9 +9,7 @@ tqdm
 geopandas
 xarray
 NREL-rex
-geopandas
 shapely
 fiona
-xarray
 pyomo
 gurobipy
