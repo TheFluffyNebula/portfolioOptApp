@@ -47,7 +47,7 @@ const WindAbout = () => {
             </div>
 
             <figure className='w-full mb-8 flex flex-col items-center'>
-                <Image src='/wind_turbines.png' alt='Wind turbine designs' width={600} height={400} />
+                <Image src='/wind/wind_turbines.png' alt='Wind turbine designs' width={600} height={400} />
                 <figcaption className='text-sm text-gray-500 italic mt-2'>
                     Figure 1: 8, 12, 15, and 18 MW turbine designs from [1] with associated hub heights and diameters
                 </figcaption>
@@ -74,7 +74,7 @@ const WindAbout = () => {
             </ul>
 
             <figure className='w-full mb-8 flex flex-col items-center'>
-                <Image src='/wind_power_curves.png' alt='Wind turbine power curves' width={600} height={400} />
+                <Image src='/wind/wind_power_curves.png' alt='Wind turbine power curves' width={600} height={400} />
                 <figcaption className='text-sm text-gray-500 italic mt-2'>
                     Figure 2: 8, 12, 15, 18 MW wind turbine power curves from [1]
                 </figcaption>
