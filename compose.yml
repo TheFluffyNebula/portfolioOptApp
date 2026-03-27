@@ -22,6 +22,7 @@ services:
       - 4000:4000
     volumes:
       - ./backend/InputData:/app/InputData
+      - ./backend/OceanPortfolioOptimization:/app/OceanPortfolioOptimization
       - ./backend/OutputData:/app/OutputData
       # Place your gurobi.lic file in the project root (same folder as compose.yml)
       - ./gurobi.lic:/root/gurobi.lic
