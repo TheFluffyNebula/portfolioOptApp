@@ -16,9 +16,9 @@ let about = [
     {
         id: 3,
         title: "Ocean Energy (Kites)",
-        img_path: "/kites/kites.jpg",
+        img_path: "/kite/kite.jpg",
         info: "Underwater kites, also known as tidal kites or sea dragons, generate electricity from ocean currents by converting kinetic energy to electricity",
-        redirect: "/about/kites"
+        redirect: "/about/kite"
     },
 ];
 
