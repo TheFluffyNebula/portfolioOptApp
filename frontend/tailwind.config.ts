@@ -12,9 +12,15 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        surface: "var(--surface)",
+        "surface-2": "var(--surface-2)",
+        muted: "var(--muted)",
+        accent: "var(--accent)",
+        "accent-blue": "var(--accent-blue)",
       },
     },
   },
   plugins: [],
 };
+
 export default config;

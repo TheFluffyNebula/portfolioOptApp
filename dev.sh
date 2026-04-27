@@ -1,15 +1,14 @@
 #! /bin/bash
 
-red='\033[0;31m'
-green='\033[0;32m'
 yellow='\033[0;33m'
-blue='\033[0;34m'
-magenta='\033[0;35m'
-cyan='\033[0;36m'
+green='\033[0;32m'
 clear='\033[0m'
 
-echo -e "${yellow}Starting system${clear}"
+echo -e "${yellow}Starting development environment with Docker Watch...${clear}"
+echo -e "${green}Frontend: http://localhost:3000  |  Backend: http://localhost:4000${clear}"
+echo ""
+echo "Source changes in frontend/src/ sync instantly (no rebuild)."
+echo "package.json / config changes trigger an image rebuild."
+echo ""
 
-echo -e "${yellow}Building apps${clear}"
-
-nodemon -w . -e "py,js,html,css,txt" -x "docker compose build && docker compose up -d"
+docker compose -f compose.yml -f compose.dev.yml watch
