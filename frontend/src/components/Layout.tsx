@@ -1,6 +1,4 @@
 import styles from '../styles/components/Layout.module.css';
-
-// Components
 import Navbar from './Navbar';
 
 type LayoutProps = {
@@ -11,7 +9,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <>
       <Navbar />
-      <div className={`${styles.container} bg-gray-200`}>
+      <div className={styles.container}>
         <main className={styles.main}>
           {children}
         </main>

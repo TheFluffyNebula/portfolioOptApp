@@ -1,0 +1,27 @@
+# Development override: use with `docker compose -f compose.yml -f compose.dev.yml watch`
+# Switches the Next.js service to a dev server with hot-module replacement and Docker Watch.
+services:
+  nextapp:
+    build:
+      context: ./frontend
+      dockerfile: next.dev.dockerfile
+    environment:
+      - WATCHPACK_POLLING=true
+    develop:
+      watch:
+        # Sync source and public files into the running container — Next.js picks them up without rebuilding
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+        - action: sync
+          path: ./frontend/public
+          target: /app/public
+        # Rebuild the image when dependencies or Next.js config change
+        - action: rebuild
+          path: ./frontend/package.json
+        - action: rebuild
+          path: ./frontend/package-lock.json
+        - action: rebuild
+          path: ./frontend/next.config.mjs
+        - action: rebuild
+          path: ./frontend/tailwind.config.ts
